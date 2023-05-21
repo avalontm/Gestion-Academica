@@ -1,0 +1,541 @@
+﻿@implements IDisposable
+@using System.Reflection;
+@using PluginSQL;
+@using SixLabors.ImageSharp;
+@using SixLabors.ImageSharp.Processing;
+
+@if (showDialog)
+{
+    <div id="ServiceOKModal" class="modal fade @DialogCssCandidates" style="display:block; background-color: rgba(10,10,10,.25);" aria-modal="true" role="dialog">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100">
+                        @if (isEdit)
+                        {
+                            <b>Editar</b>
+                        }
+                        else
+                        {
+                            <b>Agregar</b>
+                        }
+                    </h4>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" @onclick="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+
+                </div>
+                <div class="modal-body">
+
+                    <div class="form-group">
+                        @foreach (var fi in fis)
+                        {
+                            bool isReadOnly = false;
+                            var onlyRead = fi.GetCustomAttribute<OnlyReadAttribute>(true);
+                            var isHidden = fi.GetCustomAttribute<HidenFieldAttribute>(true);
+                            var isPhone = fi.GetCustomAttribute<PhoneFieldAttribute>(true);
+                            var isEmail = fi.GetCustomAttribute<EmailFieldAttribute>(true);
+                            var isFile = fi.GetCustomAttribute<FileFieldAttribute>(true);
+                            var isColor = fi.GetCustomAttribute<ColorFieldAttribute>(true);
+                            var isParent = fi.GetCustomAttribute<ParentFieldAttribute>(true);
+                            var isDisplay = fi.GetCustomAttribute<DisplayFieldAttribute>(true);
+                            var isPassword = fi.GetCustomAttribute<PasswordFieldAttribute>(true);
+                            var isFiltro = fi.GetCustomAttribute<FiltroFieldAttribute>(true);
+
+                            if (onlyRead != null)
+                            {
+                                isReadOnly = true;
+                            }
+
+                            if (isHidden == null)
+                            {
+                                if (isDisplay != null)
+                                {
+                                    <label style="margin-top:10px;">@isDisplay.Display.ToUpper() </label>
+                                }
+                                else
+                                {
+                                    <label style="margin-top:10px;">@fi.Name.Split("_").FirstOrDefault().ToUpper() </label>
+                                }
+                                if (fi.PropertyType == typeof(string))
+                                {
+                                    if (isPhone != null)
+                                    {
+                                        <input type="tel" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                    }
+                                    else if (isEmail != null)
+                                    {
+                                        <input type="email" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                    }
+                                    else if (isFile != null)
+                                    {
+                                        <div>
+                                            @if (string.IsNullOrEmpty(fi.GetValue(Model)?.ToString()))
+                                            {
+                                                <img class="nav-avatar" src="/media/products/default.png" />
+                                            }
+                                            else
+                                            {
+                                                <img class="nav-avatar" src="@(fi.GetValue(Model).ToString())" />
+                                            }
+                                            <InputFile style="margin-left:20px;" OnChange="@((e) => onFileChanged(e, fi))" />
+                                        </div>
+
+                                    }
+                                    else if (isColor != null)
+                                    {
+                                        <input style="height:48px" type="color" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                    }
+                                    else
+                                    {
+                                        if (isReadOnly)
+                                        {
+                                            if (isPassword != null && isPassword.isPassword)
+                                            {
+                                                <div class="password-container">
+                                                    <input type="@inputType" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                                </div>
+
+
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                            }
+                                        }
+                                        else
+                                        {
+                                            if (isPassword != null && isPassword.isPassword)
+                                            {
+                                                <div class="password-container">
+                                                    <input type="@inputType" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                            }
+                                        }
+                                    }
+                                }
+                                else if (fi.PropertyType == typeof(int))
+                                {
+                                    //Propiedad de Parent
+                                    if (isParent != null)
+                                    {
+                                        DB dbCuenta = new DB();
+                                        var options = dbCuenta.Table(isParent.Name.ToLower()).Select("*").Get();
+                                        int index = 0;
+
+                                        <div class="form-group">
+                                            @{
+                                                Dictionary<string, object> SelectAttributes = new();
+                                            }
+
+                                            @if (isReadOnly)
+                                            {
+                                                SelectAttributes.Add("disabled", "true");
+                                            }
+
+                                            <select name="@fi.Name" id="@fi.Name" class="form-select" @onchange="@((e) => onSelectChanged(e, fi))" @attributes="@SelectAttributes">
+                                                @foreach (var option in options)
+                                                {
+                                                    if (option.Get.Values.FirstOrDefault().ToString() == fi.GetValue(Model).ToString())
+                                                    {
+                                                        if (string.IsNullOrEmpty(isParent.Display))
+                                                        {
+                                                            <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue(isParent.Display)</option>
+                                                        }
+                                                        index++;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (index == 0)
+                                                        {
+                                                            if (string.IsNullOrEmpty(isParent.Display))
+                                                            {
+                                                                <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue(isParent.Display)</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (string.IsNullOrEmpty(isParent.Display))
+                                                            {
+                                                                <option value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@option.Get.GetValue("id")">@option.Get.GetValue(isParent.Display)</option>
+                                                            }
+                                                        }
+                                                        index++;
+                                                    }
+
+                                                }
+                                            </select>
+
+                                            @if (options.Count > 0)
+                                            {
+                                                if (fi.GetValue(Model) is int)
+                                                {
+                                                    int id = int.Parse(fi.GetValue(Model).ToString());
+
+                                                    if (id == 0)
+                                                    {
+                                                        fi.SetValue(Model, int.Parse(options.FirstOrDefault().Get.GetValue("id")));
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else if (isParent != null)
+                                    {
+                                        if (isReadOnly)
+                                        {
+                                            <input type="number" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onIntChanged(e, fi))">
+                                        }
+                                        else
+                                        {
+                                            <input type="number" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onIntChanged(e, fi))">
+                                        }
+                                    }
+
+                                    //End propiedad de parent
+
+                                    //Propiedad de Filtro
+                                    if (isFiltro != null)
+                                    {
+                                        DB dbCuenta = new DB();
+                                        var options = dbCuenta.Table(isFiltro.Name.ToLower()).Select("*").Get();
+
+                                        int index = 0;
+
+                                        <div class="form-group">
+                                            @{
+                                                Dictionary<string, object> SelectAttributes = new();
+                                            }
+
+                                            @if (isReadOnly)
+                                            {
+                                                SelectAttributes.Add("disabled", "true");
+                                            }
+
+                                            <select name="@fi.Name" id="@fi.Name" class="form-select" @onchange="@((e) => onFiltroChanged(e, fi))" @attributes="@SelectAttributes">
+                                                @foreach (var option in options)
+                                                {
+                                                    if (option.Get.Values.FirstOrDefault().ToString() == fi.GetValue(Model).ToString())
+                                                    {
+                                                        if (string.IsNullOrEmpty(isFiltro.Display))
+                                                        {
+                                                            <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue(isFiltro.Display)</option>
+                                                        }
+                                                        index++;
+                                                    }
+                                                    else
+                                                    {
+                                                        if (index == 0)
+                                                        {
+                                                            if (string.IsNullOrEmpty(isFiltro.Display))
+                                                            {
+                                                                <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option selected value="@option.Get.GetValue("id")">@option.Get.GetValue(isFiltro.Display)</option>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            if (string.IsNullOrEmpty(isFiltro.Display))
+                                                            {
+                                                                <option value="@option.Get.GetValue("id")">@option.Get.GetValue("nombre")</option>
+                                                            }
+                                                            else
+                                                            {
+                                                                <option value="@option.Get.GetValue("id")">@option.Get.GetValue(isFiltro.Display)</option>
+                                                            }
+                                                        }
+                                                        index++;
+                                                    }
+
+                                                }
+                                            </select>
+
+                                            @if (options.Count > 0)
+                                            {
+                                                if (fi.GetValue(Model) is int)
+                                                {
+                                                    int id = int.Parse(fi.GetValue(Model).ToString());
+
+                                                    if (id == 0)
+                                                    {
+                                                        fi.SetValue(Model, int.Parse(options.FirstOrDefault().Get.GetValue("id")));
+                                                    }
+                                                }
+                                            }
+                                        </div>
+                                    }
+                                    else if (isFiltro != null)
+                                    {
+                                        if (isReadOnly)
+                                        {
+                                            <input type="number" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onIntChanged(e, fi))">
+                                        }
+                                        else
+                                        {
+                                            <input type="number" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onIntChanged(e, fi))">
+                                        }
+                                    }
+
+                                    //End propiedad de filtro
+                                }
+                                else if (fi.PropertyType == typeof(decimal))
+                                {
+                                    if (isReadOnly)
+                                    {
+                                        <input type="number" class="form-control" value="@fi.GetValue(Model)" readonly @onchange="@((e) => onDecimalChanged(e, fi))">
+                                    }
+                                    else
+                                    {
+                                        <input type="number" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onDecimalChanged(e, fi))">
+                                    }
+                                }
+                                else if (fi.PropertyType == typeof(DateTime))
+                                {
+                                    if (isReadOnly)
+                                    {
+                                        <input type="date" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" readonly @onchange="@((e) => onTextChanged(e, fi))">
+                                    }
+                                    else
+                                    {
+                                        <input type="date" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" @onchange="@((e) => onTextChanged(e, fi))">
+                                    }
+                                }
+                                else if (fi.PropertyType == typeof(bool))
+                                {
+                                    bool isCheked = bool.Parse(@fi.GetValue(Model).ToString());
+
+                                    if (isCheked)
+                                    {
+                                        <br>
+                                        <input class="form-control" type="checkbox" checked @oninput="@((e) => CheckboxChanged(e, fi))">
+                                        <br>
+                                    }
+                                    else
+                                    {
+                                        <br>
+                                        <input class="form-control" type="checkbox" @oninput="@((e) => CheckboxChanged(e, fi))">
+                                        <br>
+                                    }
+
+                                }
+                            }
+                        }
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+
+                    @if (isEdit)
+                    {
+                        <button type="button" class="btn btn-success w-min-100" @onclick="onOK">GUARDAR</button>
+                    }
+                    else
+                    {
+                        <button type="button" class="btn btn-primary w-min-100" @onclick="onOK">@BotonDefault</button>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    private DotNetObjectReference<DialogModel>? selfReference;
+    public EventHandler<object>? OnReturn { set; get; }
+    public EventHandler<object>? OnChanged { set; get; }
+    public EventHandler<int>? OnFiltroChanged { set; get; }
+
+    bool showDialog = false;
+    string? DialogCssCandidates => showDialog ? "show" : "hide";
+    string? BotonDefault = "AGREGAR";
+
+    bool isEdit;
+    object Model;
+    string inputType = "password";
+
+    PropertyInfo[] fis { set; get; }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            selfReference = DotNetObjectReference.Create(this);
+        }
+    }
+
+    public void Show(object model, bool onlyEdit = false, string botonOK = "AGREGAR")
+    {
+        Model = model;
+        BotonDefault = botonOK;
+
+        if (onlyEdit)
+        {
+            isEdit = true;
+        }
+        else
+        {
+            if (int.Parse(Model.GetValObj("id").ToString()) > 0)
+            {
+                isEdit = true;
+            }
+        }
+
+        fis = LoadModel();
+        showDialog = true;
+        this.StateHasChanged();
+    }
+
+    PropertyInfo[] LoadModel()
+    {
+        PropertyInfo[] fis = Model.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        return fis;
+    }
+
+    public void Close()
+    {
+        Model = null;
+        fis = null;
+        showDialog = false;
+        this.StateHasChanged();
+    }
+
+    public void onCancel()
+    {
+        Close();
+    }
+
+    public void onOK()
+    {
+        OnReturn?.Invoke(this, Model);
+    }
+
+    void ShowPassword()
+    {
+        if (this.inputType == "password")
+        {
+            this.inputType = "text";
+        }
+        else
+        {
+            this.inputType = "password";
+        }
+    }
+
+    void onTextChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        fi.SetValue(Model, e.Value);
+    }
+
+    void onIntChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        fi.SetValue(Model, int.Parse(e.Value.ToString()));
+    }
+
+    void onDecimalChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        fi.SetValue(Model, decimal.Parse(e.Value.ToString()));
+    }
+
+    void CheckboxChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        fi.SetValue(Model, e.Value);
+    }
+
+    void onSelectChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        if (e.Value != null)
+        {
+            fi.SetValue(Model, int.Parse(e.Value.ToString()));
+            OnChanged?.Invoke(this, Model);
+        }
+    }
+
+    void onFiltroChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        if (e.Value != null)
+        {
+            fi.SetValue(Model, int.Parse(e.Value.ToString()));
+            OnFiltroChanged?.Invoke(this, int.Parse(e.Value.ToString()));
+        }
+    }
+
+    async void onFileChanged(InputFileChangeEventArgs e, PropertyInfo fi)
+    {
+        int id = int.Parse(Model.GetValObj("id").ToString());
+
+        if (id > 0)
+        {
+            int newWidth = 512;
+            int newHeight = 512;
+
+            MemoryStream stream = new MemoryStream();
+
+            var buffer = new byte[e.File.Size];
+            await e.File.OpenReadStream(e.File.Size).ReadAsync(buffer);
+
+            if (buffer.Length == 0)
+            {
+                return;
+            }
+
+            try
+            {
+                using (Image image = Image.Load(buffer))
+                {
+                    if (image.Width < newWidth && image.Height < newHeight)
+                    {
+                        image.Mutate(x => x.Resize(newWidth, newHeight));
+                    }
+                    else if (image.Width > newWidth && image.Height > newHeight)
+                    {
+                        image.Mutate(x => x.Resize(new ResizeOptions() { Size = new SixLabors.ImageSharp.Size(newWidth, newHeight), Position = AnchorPositionMode.Center, Mode = ResizeMode.Stretch }));
+                    }
+
+                    string output = $"/media/files/{Model.GetType().Name.ToLower()}_{id}.png";
+                    fi.SetValue(Model, $"{output}?{StringManager.GenerateString()}");
+
+                    await image.SaveAsPngAsync($"wwwroot{output}");
+
+                    StateHasChanged();
+                }
+            }
+            catch (Exception ex)
+            {
+                return;
+            }
+
+            StateHasChanged();
+        }
+    }
+
+    public void Dispose() => selfReference?.Dispose();
+}

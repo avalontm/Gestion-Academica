@@ -1,0 +1,63 @@
+﻿@inherits LayoutComponentBase
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+
+<PageTitle>Gestion Academica</PageTitle>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <main>
+        <div class="top-row px-4">
+            @if (auth.status)
+            {
+                <div class="top-row px-4">
+                    <div class="dropdown pointer" style="float:right;">
+                        @if (string.IsNullOrEmpty(auth.user.avatar))
+                        {
+                            <img class="nav-avatar" src="/media/avatares/default.jpg" />
+                        }
+                        else
+                        {
+                            <img class="nav-avatar" src="@auth.user.avatar" />
+                        }
+                        <div class="dropdown-content">
+                            <a href="/account/perfil">Mi Perfil</a>
+                            <a href="/account/logout"><span class="glyphicon glyphicon-log-out"></span>Cerrar Sesion</a>
+                        </div>
+                    </div>
+
+                    <div style="margin-left:10px;">
+                        <p>@auth.user.nombre</p>
+                    </div>
+
+                </div>
+            }
+            else
+            {
+                <div class="top-row px-4">
+                    <a class="btn logout" href="/account"><span class="glyphicon glyphicon-log-in"></span> Iniciar Sesion</a>
+                </div>
+            }
+        </div>
+
+        <article class="content px-4">
+            @Body
+        </article>
+    </main>
+</div>
+
+@code
+{
+    AuthModel auth { set; get; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        StateHasChanged();
+    }
+
+}

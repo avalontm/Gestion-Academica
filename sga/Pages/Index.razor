@@ -1,0 +1,42 @@
+﻿@page "/"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+
+<div class="container">
+    @if (auth.status)
+    {
+        <div class="container-spacing">
+            <h2>Acerca de</h2>
+        </div>
+
+        <div class="chart-spacing">
+            Este software es un proyecto del Tecnológico Nacional de México Campus Ensenada, creado y mantenido por: <b>Jaime Raul Mendez Lopez</b>.
+        </div>
+    }
+    else
+    {
+        <div class="container-spacing">
+            <h2>Para poder acceder al contenido es neserio identificar tu cuenta.</h2>
+        </div>
+    }
+</div>
+
+
+@code{
+    AuthModel auth { set; get; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+
+
+}

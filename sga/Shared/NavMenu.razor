@@ -1,0 +1,63 @@
+﻿@inject AuthenticationStateProvider GetAuthenticationStateAsync
+
+<div class="top-row ps-3 navbar navbar-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="">Gestion Academica</a>
+        <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+    </div>
+</div>
+
+<div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
+    <nav class="flex-column">
+        <div class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Inicio
+            </NavLink>
+        </div>
+
+        @if (auth.status)
+        {
+            @if (auth.isAlumno())
+            {
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="cursos">
+                    <span class="menu-icon" aria-hidden="true">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                            <path d="M225.9 32C103.3 32 0 130.5 0 252.1 0 256 .1 480 .1 480l225.8-.2c122.7 0 222.1-102.3 222.1-223.9C448 134.3 348.6 32 225.9 32zM224 384c-19.4 0-37.9-4.3-54.4-12.1L88.5 392l22.9-75c-9.8-18.1-15.4-38.9-15.4-61 0-70.7 57.3-128 128-128s128 57.3 128 128-57.3 128-128 128z" />
+                        </svg>
+                    </span>
+                        Cusros
+                    </NavLink>
+                </div>
+
+
+                <div class="nav-item px-3">
+                    <NavLink class="nav-link" href="foros">
+                        <span class="oi oi-list-rich" aria-hidden="true"></span> Foros
+                    </NavLink>
+                </div>
+            }
+        }
+
+    </nav>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+    AuthModel auth { set; get; } = new();
+    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+        StateHasChanged();
+    }
+}
