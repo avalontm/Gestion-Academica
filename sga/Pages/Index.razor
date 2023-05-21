@@ -1,4 +1,8 @@
 ﻿@page "/"
+@using BlazorCalendar
+@using BlazorCalendar.Models
+@using System.Diagnostics;
+
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 
@@ -6,12 +10,16 @@
     @if (auth.status)
     {
         <div class="container-spacing">
-            <h2>Acerca de</h2>
+            <h2>Tareas del mes</h2>
         </div>
 
-        <div class="chart-spacing">
-            Este software es un proyecto del Tecnológico Nacional de México Campus Ensenada, creado y mantenido por: <b>Jaime Raul Mendez Lopez</b>.
+        <div class="container-spacing">
+            <CalendarContainer DisplayedView="DisplayedView.Monthly" TasksList="Tareas.ToArray()">
+                <MonthlyView Months="months" Style="height:80vh"  PriorityDisplay="@PriorityDisplay" TaskClick="TaskClick" />
+            </CalendarContainer>
+
         </div>
+
     }
     else
     {
@@ -24,6 +32,9 @@
 
 @code{
     AuthModel auth { set; get; } = new();
+    private int months = 12;
+    List<Tasks> Tareas { set; get; }
+    PriorityLabel PriorityDisplay = PriorityLabel.Code;
 
     protected async override Task OnInitializedAsync()
     {
@@ -35,8 +46,30 @@
             return;
         }
 
+        onLoadCalendario();
         StateHasChanged();
     }
 
+    void onLoadCalendario()
+    {
+        DateTime today = DateTime.Now;
 
+        Tareas = new()
+        {
+            new Tasks { ID = 1, DateStart = today.AddDays(8), DateEnd = today.AddDays(8), Code = "CP", Color = "#19C319", Caption = "Lorem ipsum dolor sit amet" },
+            new Tasks { ID = 2, DateStart = today.AddDays(9), DateEnd = today.AddDays(9), Code = "DEV", Color = "#FFD800", Comment="on Teams template", Caption = "Fusce quis purus eu ante" },
+            new Tasks { ID = 3, DateStart = today.AddDays(5), DateEnd = today.AddDays(5), Code = "DEV", Color = "#FFD800" },
+
+            new Tasks { ID = 4, DateStart = today.AddDays(2), DateEnd = today.AddDays(2), Code = "FORM", Color = "#FFC3FF", Caption = "Ut sit amet turpis eget" } ,
+            new Tasks { ID = 5, DateStart = today.AddDays(10).AddHours(8), DateEnd = today.AddDays(10).AddHours(9), Code = "MEETING", Color = "#2DD7D7", Comment="Julien's test" }
+        };
+    }
+
+    void TaskClick(ClickTaskParameter clickTaskParameter)
+    {
+        foreach (int id in clickTaskParameter.IDList)
+        {
+            Debug.WriteLine($"Tarea : {id}");
+        }
+    }
 }
