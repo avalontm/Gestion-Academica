@@ -1257,6 +1257,10 @@ input[type="date"], focus {
         transform: scale(0.95, 0.95);
     }
 
+hr {
+    height: 10px;
+    background-color: white;
+}
 
 .menu-icon {
     margin-top: -30px;
@@ -1264,5 +1268,11 @@ input[type="date"], focus {
     width:20px;
     height: 20px;
     fill:white;
+}
+
+.menu-header
+{
+    color:white;
+    margin-left: 15px;
 }
 /* Menu Bar */
