@@ -133,7 +133,7 @@
     {
         dialog.OnReturn = onDeleteReturn;
         dialog.Model = item;
-        dialog.Show("Confirmar", "¿Esta seguro que desea eliminar esta producto?", DialogButton.YESNO);
+        dialog.Show("Confirmar", "¿Esta seguro que desea eliminar este taller?", DialogButton.YESNO);
     }
 
     void onDeleteReturn(object sender, object e)
@@ -188,7 +188,7 @@
             {
                 if (item.Update())
                 {
-                    toastService.ShowSuccess($"Se ha actualizado el buzo: {item.nombre}");
+                    toastService.ShowSuccess($"Se ha actualizado el taller: {item.nombre}");
                 }
             }
             catch (Exception ex)
