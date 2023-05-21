@@ -42,6 +42,7 @@
                             var isDisplay = fi.GetCustomAttribute<DisplayFieldAttribute>(true);
                             var isPassword = fi.GetCustomAttribute<PasswordFieldAttribute>(true);
                             var isFiltro = fi.GetCustomAttribute<FiltroFieldAttribute>(true);
+                            var isEditor = fi.GetCustomAttribute<EditorFieldAttribute>(true);
 
                             if (onlyRead != null)
                             {
@@ -87,41 +88,78 @@
                                     {
                                         <input style="height:48px" type="color" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
                                     }
-                                    else
+                                    else if (isEditor != null)
                                     {
-                                        if (isReadOnly)
+
+                                        <BlazoredTextEditor @ref="@QuillHtml">
+                                            <ToolbarContent>
+                                                <select class="ql-header">
+                                                    <option selected=""></option>
+                                                    <option value="1"></option>
+                                                    <option value="2"></option>
+                                                    <option value="3"></option>
+                                                    <option value="4"></option>
+                                                    <option value="5"></option>
+                                                </select>
+                                                <span class="ql-formats">
+                                                    <button class="ql-bold"></button>
+                                                    <button class="ql-italic"></button>
+                                                    <button class="ql-underline"></button>
+                                                    <button class="ql-strike"></button>
+                                                </span>
+                                                <span class="ql-formats">
+                                                    <select class="ql-color"></select>
+                                                    <select class="ql-background"></select>
+                                                </span>
+                                                <span class="ql-formats">
+                                                    <button class="ql-list" value="ordered"></button>
+                                                    <button class="ql-list" value="bullet"></button>
+                                                </span>
+                                                <span class="ql-formats">
+                                                    <button class="ql-link"></button>
+                                                </span>
+                                            </ToolbarContent>
+                                            <EditorContent>
+                                             
+                                            </EditorContent>
+                                        </BlazoredTextEditor>
+
+                                    }
+                                else
+                                {
+                                    if (isReadOnly)
+                                    {
+                                        if (isPassword != null && isPassword.isPassword)
                                         {
-                                            if (isPassword != null && isPassword.isPassword)
-                                            {
-                                                <div class="password-container">
-                                                    <input type="@inputType" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
-                                                </div>
+                                            <div class="password-container">
+                                                <input type="@inputType" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                            </div>
 
 
-                                            }
-                                            else
-                                            {
-                                                <input type="text" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                            }
                                         }
                                         else
                                         {
-                                            if (isPassword != null && isPassword.isPassword)
-                                            {
-                                                <div class="password-container">
-                                                    <input type="@inputType" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
-                                                </div>
+                                            <input type="text" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                        }
+                                    }
+                                    else
+                                    {
+                                        if (isPassword != null && isPassword.isPassword)
+                                        {
+                                            <div class="password-container">
+                                                <input type="@inputType" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                            </div>
 
-                                            }
-                                            else
-                                            {
-                                                <input type="text" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                            }
+                                        }
+                                        else
+                                        {
+                                            <input type="text" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
                                         }
                                     }
                                 }
+                            }
                                 else if (fi.PropertyType == typeof(int))
                                 {
                                     //Propiedad de Parent
@@ -320,11 +358,11 @@
                                 {
                                     if (isReadOnly)
                                     {
-                                        <input type="date" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" readonly @onchange="@((e) => onTextChanged(e, fi))">
+                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" readonly @onchange="@((e) => onDateTimeChanged(e, fi))">
                                     }
                                     else
                                     {
-                                        <input type="date" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" @onchange="@((e) => onTextChanged(e, fi))">
+                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" @onchange="@((e) => onDateTimeChanged(e, fi))">
                                     }
                                 }
                                 else if (fi.PropertyType == typeof(bool))
@@ -381,6 +419,9 @@
     bool isEdit;
     object Model;
     string inputType = "password";
+    public BlazoredTextEditor? QuillHtml { private set; get; }
+    string? htmlContent;
+    bool isEditor;
 
     PropertyInfo[] fis { set; get; }
 
@@ -396,6 +437,7 @@
     {
         Model = model;
         BotonDefault = botonOK;
+        isEditor = false;
 
         if (onlyEdit)
         {
@@ -414,6 +456,40 @@
         this.StateHasChanged();
     }
 
+    public async void ShowEditor(object model, string content, bool onlyEdit = false, string botonOK = "AGREGAR")
+    {
+        htmlContent = content;
+        Model = model;
+        BotonDefault = botonOK;
+        isEditor = true;
+
+        if (onlyEdit)
+        {
+            isEdit = true;
+        }
+        else
+        {
+            if (int.Parse(Model.GetValObj("id").ToString()) > 0)
+            {
+                isEdit = true;
+            }
+        }
+
+        fis = LoadModel();
+        showDialog = true;
+        this.StateHasChanged();
+        await Task.Delay(10);
+
+        while (QuillHtml == null)
+        {
+            await Task.Delay(100);
+        }
+
+        await QuillHtml.LoadHTMLContent(htmlContent);
+
+        this.StateHasChanged();
+    }
+
     PropertyInfo[] LoadModel()
     {
         PropertyInfo[] fis = Model.GetType().GetProperties(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
@@ -424,6 +500,7 @@
     {
         Model = null;
         fis = null;
+        isEditor = false;
         showDialog = false;
         this.StateHasChanged();
     }
@@ -453,6 +530,11 @@
     void onTextChanged(ChangeEventArgs e, PropertyInfo fi)
     {
         fi.SetValue(Model, e.Value);
+    }
+
+    void onDateTimeChanged(ChangeEventArgs e, PropertyInfo fi)
+    {
+        fi.SetValue(Model, DateTime.Parse(e.Value.ToString()));
     }
 
     void onIntChanged(ChangeEventArgs e, PropertyInfo fi)

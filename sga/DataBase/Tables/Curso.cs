@@ -14,6 +14,7 @@ namespace sga.DataBase.Tables
 
         [OnlyRead]
         [JsonIgnore]
+        [HidenField]
         public DateTime created_at { set; get; }
 
         [OnlyRead]

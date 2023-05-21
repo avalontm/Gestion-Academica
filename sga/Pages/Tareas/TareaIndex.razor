@@ -1,0 +1,54 @@
+﻿@page "/tarea/{tarea_codigo}"
+@using System.Diagnostics;
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+
+    <div class="container-spacing">
+        <h2><b>@tarea?.titulo</b></h2>
+    </div>
+
+
+    <div class="container-tarea"> 
+        @((MarkupString)tarea?.contenido)
+    </div>
+
+@code {
+    [ParameterAttribute]
+    public string? tarea_codigo { set; get; }
+    DateTime date { set; get; }
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    Tarea? tarea { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        onLoadTarea();
+        StateHasChanged();
+    }
+
+   
+    async void onLoadTarea()
+    {
+        tarea = Tarea.Find(tarea_codigo);
+
+        if(tarea == null)
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+}

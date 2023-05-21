@@ -13,6 +13,7 @@
                 <h3> Curso de <b>@curso?.nombre</b></h3>
             </div>
         </div>
+
         <div class="container-spacing">
             <button class="btn btn-outline-dark btn-lg" @onclick="onNew"> <span class="oi oi-plus"> NUEVO TALLER</span></button>
         </div>
@@ -172,6 +173,7 @@
 
         StateHasChanged();
     }
+
     void onEditReturn(object sender, object e)
     {
         Taller item = e as Taller;
