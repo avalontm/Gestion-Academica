@@ -1,5 +1,4 @@
-﻿@page "/calendario/{dateString}"
-@using System.Diagnostics;
+﻿@page "/docente/curso/taller/{taller_id:int}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
@@ -7,17 +6,17 @@
 <div class="container">
 
     <div class="container-spacing">
-        <h2>Tareas del <b>@date.ToString("dddd dd \\de\\ MMMM \\del\\ yyyy")</b></h2>
+        <h2><b>@taller?.nombre</b></h2>
     </div>
 
 </div>
 
 @code {
     [ParameterAttribute]
-    public string? dateString { set; get; }
-    DateTime date { set; get; }
+    public int taller_id { set; get; }
     [Inject] IToastService? toastService { set; get; }
     AuthModel auth { set; get; } = new();
+    Taller taller { set; get; }
     List<Tarea> tareas { set; get; }
     DialogDefault? dialog;
     DialogModel? dialogModel;
@@ -32,20 +31,21 @@
             return;
         }
 
-        onLoadTareas();
+        onLoadTaller();
         StateHasChanged();
     }
 
-    void onLoadTareas()
+    void onLoadTaller()
     {
-        try
+        taller = Taller.Find(taller_id);
+
+        if (taller != null)
         {
-            date = DateTime.Parse(dateString);
-        }catch
-        {
-            date = DateTime.Now;
+            if(taller.user_id != auth.user.id)
+            {
+                NavigationManager.NavigateTo("/denegado", true);
+                return;
+            }
         }
-
-
     }
 }

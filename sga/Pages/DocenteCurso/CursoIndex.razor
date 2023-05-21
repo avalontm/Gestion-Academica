@@ -2,7 +2,7 @@
 
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
-
+@inject IJSRuntime jsRuntime
 
 <div class="container">
     <div class="row">
@@ -55,6 +55,9 @@
                             </a>
 
                             <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <div>
+                                    <button class="menu-item" @onclick="@(() => onSee(item))">VER</button>
+                                </div>
                                 <div>
                                     <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>
                                 </div>
@@ -120,7 +123,12 @@
         }
 
         dialogModel.OnReturn = onEditReturn;
-        dialogModel.Show(new Taller() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id });
+        dialogModel.Show(new Taller() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id, user_id = auth.user.id });
+    }
+
+    async void onSee(Taller item)
+    {
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"docente/curso/taller/{item.id}", "_self" });
     }
 
     void onEdit(Taller item)

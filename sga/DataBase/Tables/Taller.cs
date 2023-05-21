@@ -25,6 +25,9 @@ namespace sga.DataBase.Tables
         [HidenField]
         public int curso_id { set; get; }
 
+        [HidenField]
+        public int user_id { set; get; }
+
         public bool activo { set; get; }
 
         [OnlyRead]
@@ -35,6 +38,11 @@ namespace sga.DataBase.Tables
         public static List<Taller> Get(int curso_id, int limit = 100)
         {
             return MYSQL.Query<Taller>($"SELECT * FROM talleres WHERE curso_id='{curso_id}' AND eliminado='0' ORDER BY created_at DESC LIMIT {limit}");
+        }
+
+        public static Taller Find(int taller_id)
+        {
+            return MYSQL.Query<Taller>($"SELECT * FROM talleres WHERE id='{taller_id}' AND eliminado='0' LIMIT 1").FirstOrDefault();
         }
 
         public static List<Taller> Filter(int curso_id, string filter, int LIMIT = 100)

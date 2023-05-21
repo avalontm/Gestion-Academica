@@ -1,0 +1,30 @@
+﻿@page "/denegado"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="container-center" style="text-align:center;">
+    <div style="margin-top:30px">
+        <img class="img-center" src="/media/otros/acceso_denegado.png" />
+        <label class="text-center" style="margin-top:10px;font-size:24px;"><b>No tienes permitido acceder</b></label>
+    </div>
+   
+</div>
+
+@code {
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+}
