@@ -5,6 +5,7 @@
 
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
 
 <div class="container">
     @if (auth.status)
@@ -64,11 +65,8 @@
         };
     }
 
-    void TaskClick(ClickTaskParameter clickTaskParameter)
+    async void TaskClick(ClickTaskParameter task)
     {
-        foreach (int id in clickTaskParameter.IDList)
-        {
-            Debug.WriteLine($"Tarea : {id}");
-        }
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"/calendario/{task.Day.ToString("yyyy-MM-dd")}", "_self" });
     }
 }
