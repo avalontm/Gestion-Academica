@@ -1,0 +1,117 @@
+﻿@page "/account/perfil"
+@using PluginSQL;
+@using SixLabors.ImageSharp;
+@using SixLabors.ImageSharp.Formats.Jpeg;
+@using SixLabors.ImageSharp.Formats.Png;
+@using SixLabors.ImageSharp.Processing;
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+
+
+@if (auth.status)
+{
+    <h3 style="margin-top:10px;">Mi Perfil</h3>
+
+        <div class="container-center">
+
+            <div class="container-spacing file-input-zone">
+                @if (string.IsNullOrEmpty(auth.user?.avatar))
+                {
+                    <img class="avatar" src="/media/avatares/default.jpg" alt="@auth.user?.nombre" />
+                }
+
+                else
+                {
+                    <img class="avatar" src="@auth.user?.avatar" alt="@auth.user?.nombre" />
+                }
+                <div class="file-input-camera" />
+                <InputFile OnChange="onAvatarOnChange" />
+            </div>
+
+            <div class="container-spacing wrap-input100">
+                <p><b>Email</b></p>
+                <input class="input100" value="@auth.user.email" readonly/>
+            </div>
+
+            <div class="container-spacing wrap-input100">
+                <p><b>Nombre</b></p>
+                <input class="input100" value="@auth.user.nombre" readonly />
+            </div>
+
+             <div class="container-spacing wrap-input100">
+                <p><b>Acceso</b></p>
+                <input class="input100" value="@(RolUser.Find( auth.user.role_id)?.nombre)" readonly />
+            </div>
+        </div>
+
+}
+
+@code
+{
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+
+
+    public async void onAvatarOnChange(InputFileChangeEventArgs e)
+    {
+        int newWidth = 512;
+        int newHeight = 512;
+
+        MemoryStream stream = new MemoryStream();
+
+        var buffer = new byte[e.File.Size];
+        await e.File.OpenReadStream(e.File.Size).ReadAsync(buffer);
+
+        if (buffer.Length == 0)
+        {
+            toastService.ShowError($"Empty file");
+            return;
+        }
+
+        try
+        {
+            using (Image image = Image.Load(buffer))
+            {
+                if (image.Width < newWidth && image.Height < newHeight)
+                {
+                    image.Mutate(x => x.Resize(newWidth, newHeight));
+                }
+                else if (image.Width > newWidth && image.Height > newHeight)
+                {
+                    image.Mutate(x => x.Resize(new ResizeOptions() { Size = new SixLabors.ImageSharp.Size(newWidth, newHeight), Position = AnchorPositionMode.Center, Mode = ResizeMode.Stretch  }));
+                }
+
+                string output = $"/media/avatares/avatar_{auth.user.id}.png";
+                auth.user.updated_at = DateTime.Now;
+                auth.user.avatar = $"{output}?{auth.user.updated_at.ToString("yyyymmddhhmmss")}";
+
+                await image.SaveAsPngAsync($"wwwroot{output}");
+
+                if (auth.user.Update())
+                {
+                    toastService.ShowSuccess($"Se ha actualziado tu avatar");
+                    StateHasChanged();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError($"{ex.Message}");
+            return;
+        }
+        StateHasChanged();
+    }
+}

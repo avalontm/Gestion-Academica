@@ -1275,4 +1275,20 @@ hr {
     color:white;
     margin-left: 15px;
 }
+
+.container-curso {
+    margin: 5px;
+    padding: 5px;
+    min-height:48px;
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+}
+
+.curso-titulo {
+    font-size: 16px;
+}
+.curso-docente {
+    font-size: 14px;
+}
 /* Menu Bar */

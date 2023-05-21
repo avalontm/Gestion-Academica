@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using Blazored.Toast
+@using Blazored.Toast.Configuration;
+@inherits LayoutComponentBase
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 
@@ -47,6 +49,8 @@
             @Body
         </article>
     </main>
+
+        <BlazoredToasts Position="ToastPosition.BottomRight" Timeout="2" />
 </div>
 
 @code

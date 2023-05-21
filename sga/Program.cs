@@ -1,7 +1,9 @@
+using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.IdentityModel.Tokens;
 using sga;
 
@@ -9,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
-builder.Services.AddServerSideBlazor();
 
 builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 {
@@ -17,8 +18,10 @@ builder.Services.AddServerSideBlazor().AddHubOptions(options =>
     options.MaximumReceiveMessageSize = 2000000;
 });
 
+
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
+builder.Services.AddBlazoredToast();
 
 var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtKey"]));
 int SesionExpire = int.Parse(builder.Configuration["SesionExpire"]);
