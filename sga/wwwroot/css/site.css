@@ -968,7 +968,7 @@ input[type="checkbox"] {
 }
 
 .blazored-toast-message {
-    color: white
+    color: black
 }
 
 /* CHARTS */
@@ -1257,6 +1257,13 @@ input[type="date"], focus {
         transform: scale(0.95, 0.95);
     }
 
+.container-calendar {
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #dddddd;
+    border-radius: 25px;
+}
+
 hr {
     height: 10px;
     background-color: white;
@@ -1290,5 +1297,58 @@ hr {
 }
 .curso-docente {
     font-size: 14px;
+}
+
+.curso-go {
+    margin: 5px 10px 5px 10px;
+    width: 32px;
+    height: 32px;
+
+}
+
+.curso-door {
+    height: 32px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/door-closed-solid.svg' );
+}
+
+.curso-door:hover {
+    height: 32px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/door-open-solid.svg' );
+}
+
+.icon-activo {
+    margin-top: -25px;
+    margin-left: 15px;
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/circle-check-regular.svg' );
+}
+
+.icon-desactivo {
+    margin-top: -25px;
+    margin-left: 15px;
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/ban-solid.svg' );
+}
+
+.disabled-link {
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.disabled-link:hover {
+    cursor: pointer;
+    text-decoration: none;
+    color: black;
+    font-weight:bold;
 }
 /* Menu Bar */

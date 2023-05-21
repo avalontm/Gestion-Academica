@@ -1,0 +1,42 @@
+﻿@page "/curso/{curso_codigo}"
+
+@using System.Diagnostics;
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="container">
+
+    <div class="container-spacing">
+        <h2>Curso de <b>@curso?.nombre</b></h2>
+    </div>
+
+</div>
+
+@code {
+    [ParameterAttribute]
+    public string? curso_codigo { set; get; }
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    List<Taller> talleres { set; get; }
+    Curso curso { set; get; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        onLoadCurso();
+        StateHasChanged();
+    }
+
+    void onLoadCurso()
+    {
+        curso = Curso.Find(curso_codigo);
+    }
+}

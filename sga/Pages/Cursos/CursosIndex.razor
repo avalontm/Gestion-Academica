@@ -2,6 +2,9 @@
 @using System.Diagnostics;
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<!-- Seccion donde el estudiante se le mostraran sus cursos actuales -->
 
 <div class="container">
 
@@ -16,11 +19,21 @@
     @foreach(var item in cursos)
     {
         <div class="container-curso">
-            <div>
-                <label class="curso-titulo"><b>@item.nombre</b></label>
-            </div>
-            <div>
-                <label class="curso-docente">@(User.Find(item.user_id)?.nombre)</label>
+            <div class="row">
+                <div class="col-2">
+                    <button class="curso-go " @onclick=@(() => CursoClick(item))>
+                        <div class="curso-door"></div>
+                    </button>
+                      
+                </div>
+                <div class="col">
+                    <div>
+                        <label class="curso-titulo"><b>@item.nombre</b></label>
+                    </div>
+                    <div>
+                        <label class="curso-docente">@(User.Find(item.user_id)?.nombre)</label>
+                    </div>
+                </div>
             </div>
         </div>
     }
@@ -48,5 +61,10 @@
     {
         cursos = Curso.Get();
         Debug.WriteLine($"[Cursos] {cursos.Count}");
+    }
+
+    async void CursoClick(Curso item)
+    {
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"curso/{item.codigo}", "_self" });
     }
 }

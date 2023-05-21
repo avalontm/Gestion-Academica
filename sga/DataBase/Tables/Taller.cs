@@ -20,7 +20,11 @@ namespace sga.DataBase.Tables
         [HidenField]
         [JsonIgnore]
         public DateTime updated_at { set; get; }
+
         public string? nombre { set; get; }
+
+        [OnlyRead]
+        public string? codigo { set; get; }
 
         [HidenField]
         public int curso_id { set; get; }
@@ -43,6 +47,11 @@ namespace sga.DataBase.Tables
         public static Taller Find(int taller_id)
         {
             return MYSQL.Query<Taller>($"SELECT * FROM talleres WHERE id='{taller_id}' AND eliminado='0' LIMIT 1").FirstOrDefault();
+        }
+
+        public static Taller Find(string taller_codigo)
+        {
+            return MYSQL.Query<Taller>($"SELECT * FROM talleres WHERE codigo='{taller_codigo}' AND eliminado='0' LIMIT 1").FirstOrDefault();
         }
 
         public static List<Taller> Filter(int curso_id, string filter, int LIMIT = 100)

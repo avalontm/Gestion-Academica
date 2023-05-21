@@ -9,7 +9,6 @@
   <ItemGroup>
     <Folder Include="ApiControllers\" />
     <Folder Include="wwwroot\files\" />
-    <Folder Include="wwwroot\svg\" />
   </ItemGroup>
 
   <ItemGroup>

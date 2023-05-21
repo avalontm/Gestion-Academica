@@ -4,6 +4,8 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
+<!-- Seccion donde el docente creara los talleres para el curso seleccionado -->
+
 <div class="container">
     <div class="row">
         <div class="col-25">
@@ -34,42 +36,53 @@
             <tr>
                 <th class="text-left" width="180"> Fecha </th>
                 <th class="text-left"> Nombre del taller </th>
-                <th class="text-left"> Activo </th>
+                <th class="text-left" width="80"> Activo </th>
                 <th class="text-left" width="120"> Menu </th>
             </tr>
         </thead>
 
         <tbody class="table-hover">
-
-            @foreach (var item in talleres)
+            @if(talleres != null)
             {
-                <tr>
-                    <td class="text-left">&nbsp; @item.created_at.ToString("dd-MM-yyyy")</td>
-                    <td class="text-left">&nbsp; @item.nombre</td>
-                    <td class="text-left">&nbsp; @item.activo</td>
+                @foreach (var item in talleres)
+                {
+                    <tr>
+                        <td class="text-left">&nbsp; @item.created_at.ToString("dd-MM-yyyy")</td>
+                        <td class="text-left">&nbsp;<a class="disabled-link" href="/docente/curso/taller/@item.codigo"><b>@item.nombre</b></a> </td>
+                        <td class="text-left">&nbsp; 
+                            
+                            @if(item.activo)
+                            {
+                                <div class="icon-activo" alt="Activo"/>
+                            }else
+                            {
+                                <div class="icon-desactivo"alt="Desactivado"/>
+                            }
 
-                    <td width="120px">
-                        <div class="dropdown show">
-                            <a class="btn btn-secondary dropdown-toggle btn-formato" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <span class="oi oi-data-transfer-download btn-icon"> </span> <b>ACCIONES</b>
-                            </a>
+                        </td>
 
-                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                                <div>
-                                    <button class="menu-item" @onclick="@(() => onSee(item))">VER</button>
-                                </div>
-                                <div>
-                                    <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>
-                                </div>
-                                <div>
-                                    <button class="menu-item-delete" @onclick="@(() => onDelete(item))">ELIMINAR</button>
+                        <td width="120px">
+                            <div class="dropdown show">
+                                <a class="btn btn-secondary dropdown-toggle btn-formato" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="oi oi-data-transfer-download btn-icon"> </span> <b>ACCIONES</b>
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <div>
+                                        <button class="menu-item" @onclick="@(() => onSee(item))">VER</button>
+                                    </div>
+                                    <div>
+                                        <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>
+                                    </div>
+                                    <div>
+                                        <button class="menu-item-delete" @onclick="@(() => onDelete(item))">ELIMINAR</button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                }
             }
-
         </tbody>
     </table>
 </div>
@@ -108,6 +121,7 @@
         {
             curso = Curso.FindByDocente(auth.user.id);
         }
+
         if (curso != null)
         {
             talleres = Taller.Get(curso.id);
@@ -123,12 +137,12 @@
         }
 
         dialogModel.OnReturn = onEditReturn;
-        dialogModel.Show(new Taller() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id, user_id = auth.user.id });
+        dialogModel.Show(new Taller() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id, user_id = auth.user.id, codigo = StringManager.GenerateString() });
     }
 
     async void onSee(Taller item)
     {
-        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"docente/curso/taller/{item.id}", "_self" });
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"docente/curso/taller/{item.codigo}", "_self" });
     }
 
     void onEdit(Taller item)

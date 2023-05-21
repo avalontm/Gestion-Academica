@@ -1,22 +1,25 @@
-﻿@page "/docente/curso/taller/{taller_id:int}"
+﻿@page "/docente/curso/taller/{taller_codigo}"
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
+<!-- Seccion donde el docente creara las tareas/trabajos del taller para el curso seleccionado -->
+
 <div class="container">
 
     <div class="container-spacing">
-        <h2><b>@taller?.nombre</b></h2>
+        <h2>@curso?.nombre - <b>@taller?.nombre</b></h2>
     </div>
 
 </div>
 
 @code {
     [ParameterAttribute]
-    public int taller_id { set; get; }
+    public string? taller_codigo { set; get; }
     [Inject] IToastService? toastService { set; get; }
     AuthModel auth { set; get; } = new();
     Taller taller { set; get; }
+    Curso curso { set; get; }
     List<Tarea> tareas { set; get; }
     DialogDefault? dialog;
     DialogModel? dialogModel;
@@ -37,7 +40,7 @@
 
     void onLoadTaller()
     {
-        taller = Taller.Find(taller_id);
+        taller = Taller.Find(taller_codigo);
 
         if (taller != null)
         {
@@ -47,5 +50,8 @@
                 return;
             }
         }
+
+        curso = Curso.Find(taller.curso_id);
+
     }
 }

@@ -169,6 +169,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Matematicas Discretas";
+                item.codigo = "MatDiscSS1";
                 item.user_id = 2;
 
                 if (item.Insert())
@@ -180,6 +181,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Calculo Diferencial";
+                item.codigo = "CalDifSS1";
                 item.user_id = 3;
 
                 if (item.Insert())
@@ -191,6 +193,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Fundamentos de programacion";
+                item.codigo = "ProgSS1";
                 item.user_id = 4;
 
                 if (item.Insert())
@@ -202,6 +205,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Fundamentos de investigacion";
+                item.codigo = "InvSS1";
                 item.user_id = 5;
 
                 if (item.Insert())
@@ -213,6 +217,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Administracion";
+                item.codigo = "AdminSS1";
                 item.user_id = 6;
 
                 if (item.Insert())
@@ -224,6 +229,7 @@ namespace sga
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
                 item.nombre = "Etica";
+                item.codigo = "EticaSS1";
                 item.user_id = 7;
 
                 if (item.Insert())
