@@ -1,0 +1,212 @@
+﻿@page "/docente/curso"
+
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-25">
+            <div class="table-title">
+                <h3> Curso <b>@curso?.nombre</b></h3>
+            </div>
+        </div>
+        <div class="container-spacing">
+            <button class="btn btn-outline-dark btn-lg" @onclick="onNew"> <span class="oi oi-plus"> NUEVO TALLER</span></button>
+        </div>
+
+        <div class="col-75">
+            <div class="wrap-input100">
+                <input class="input100" type="search" id="search" name="search" asp-for="SearchString" placeholder="Buscar" @oninput="onFilter">
+                <span class="focus-input100"></span>
+                <span class="symbol-input100">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </span>
+                <input type="submit" value="Submit" hidden />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-lotes">
+    <table class="table-fill">
+        <thead>
+            <tr>
+                <th class="text-left" width="180"> Fecha </th>
+                <th class="text-left"> Nombre del taller </th>
+                <th class="text-left"> Activo </th>
+                <th class="text-left" width="120"> Menu </th>
+            </tr>
+        </thead>
+
+        <tbody class="table-hover">
+
+            @foreach (var item in talleres)
+            {
+                <tr>
+                    <td class="text-left">&nbsp; @item.created_at.ToString("dd-MM-yyyy")</td>
+                    <td class="text-left">&nbsp; @item.nombre</td>
+                    <td class="text-left">&nbsp; @item.activo</td>
+
+                    <td width="120px">
+                        <div class="dropdown show">
+                            <a class="btn btn-secondary dropdown-toggle btn-formato" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="oi oi-data-transfer-download btn-icon"> </span> <b>ACCIONES</b>
+                            </a>
+
+                            <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                <div>
+                                    <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>
+                                </div>
+                                <div>
+                                    <button class="menu-item-delete" @onclick="@(() => onDelete(item))">ELIMINAR</button>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+<div class="container-footer"></div>
+
+<DialogDefault @ref=@dialog />
+<DialogModel @ref=@dialogModel />
+
+@code {
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    List<Taller> talleres { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+    Curso curso { set; get; }
+    string? FilterString { set; get; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        onLoadTalleres();
+        StateHasChanged();
+    }
+
+    void onLoadTalleres()
+    {
+        if(curso == null)
+        {
+            curso = Curso.FindByDocente(auth.user.id);
+        }
+        if (curso != null)
+        {
+            talleres = Taller.Get(curso.id);
+        }
+    }
+
+    void onNew()
+    {
+        if(curso == null)
+        { 
+            toastService.ShowError($"Solo los docentes pueden crear nuevos talleres para el curso.");
+            return;
+        }
+
+        dialogModel.OnReturn = onEditReturn;
+        dialogModel.Show(new Taller() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id });
+    }
+
+    void onEdit(Taller item)
+    {
+        dialogModel.OnReturn = onEditReturn;
+        dialogModel.Show(item);
+    }
+
+    void onDelete(Taller item)
+    {
+        dialog.OnReturn = onDeleteReturn;
+        dialog.Model = item;
+        dialog.Show("Confirmar", "¿Esta seguro que desea eliminar esta producto?", DialogButton.YESNO);
+    }
+
+    void onDeleteReturn(object sender, object e)
+    {
+        Taller item = e as Taller;
+
+        item.eliminado = true;
+
+        if (item.Update())
+        {
+            talleres = Taller.Filter(curso.id, FilterString);
+            toastService.ShowSuccess($"Se ha eliminado {item.nombre}");
+        }
+
+        StateHasChanged();
+    }
+    void onEditReturn(object sender, object e)
+    {
+        Taller item = e as Taller;
+
+        if (string.IsNullOrEmpty(item.nombre))
+        {
+            toastService.ShowError($"Se requiere que un nombre para el taller");
+            return;
+        }
+
+        if (item.nombre.Length < 3)
+        {
+            toastService.ShowError($"El nombre del taller debe ser de al menos 3 caracteres");
+            return;
+        }
+
+        if (item.id == 0)
+        {
+            try
+            {
+
+                if (item.Insert())
+                {
+                    toastService.ShowSuccess($"Se ha agregado el taller; {item.nombre}");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError($"{ex.Message}");
+                return;
+            }
+        }
+        else
+        {
+            try
+            {
+                if (item.Update())
+                {
+                    toastService.ShowSuccess($"Se ha actualizado el buzo: {item.nombre}");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError($"{ex.Message}");
+                return;
+            }
+        }
+
+        talleres = Taller.Filter(curso.id, FilterString);
+        dialogModel.Close();
+
+        StateHasChanged();
+    }
+
+    void onFilter(ChangeEventArgs args)
+    {
+        FilterString = args.Value.ToString();
+        talleres = Taller.Filter(curso.id, FilterString);
+    }
+}

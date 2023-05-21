@@ -1,0 +1,54 @@
+﻿@implements IDisposable
+
+@if (showDialog)
+{
+    <div id="DialogWaitModal" class="modal fade @DialogCssCandidates" style="display:block; background-color: rgba(10,10,10,.25);" aria-modal="true" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="container-wait">
+                <div style="margin-top:10px;">
+                    <img src="/media/icon_loading.gif" height="128" width="128" />
+                    <div style="margin-top:20px;">
+                        <label class="text-center">@Message</label>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private DotNetObjectReference<DialogWait>? selfReference;
+    bool showDialog = false;
+    string? DialogCssCandidates => showDialog ? "show" : "hide";
+    string Message = "Espera por favor...";
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            selfReference = DotNetObjectReference.Create(this);
+        }
+    }
+
+    public async Task Show(string message = "")
+    {
+        if(!string.IsNullOrEmpty(message))
+        {
+            Message = message;
+        }
+
+        showDialog = true;
+        this.StateHasChanged();
+        await Task.Delay(10);
+    }
+
+    public async Task Close()
+    {
+        showDialog = false;
+        this.StateHasChanged();
+        await Task.Delay(10);
+    }
+
+    public void Dispose() => selfReference?.Dispose();
+}

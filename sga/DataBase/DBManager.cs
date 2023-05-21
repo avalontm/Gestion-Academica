@@ -36,7 +36,8 @@ namespace sga
             MYSQL.CreateTable<RolUser>();
             MYSQL.CreateTable<Curso>();
             MYSQL.CreateTable<Tarea>();
-
+            MYSQL.CreateTable<Taller>();
+            
             //Llenamos informacion
             if (MYSQL.Table<User>().Count == 0)
             {
@@ -211,7 +212,7 @@ namespace sga
                 item = new Curso();
                 item.created_at = DateTime.Now;
                 item.updated_at = DateTime.Now;
-                item.nombre = "Administraicon";
+                item.nombre = "Administracion";
                 item.user_id = 6;
 
                 if (item.Insert())

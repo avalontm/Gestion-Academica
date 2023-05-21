@@ -30,5 +30,10 @@ namespace sga.DataBase.Tables
         {
             return MYSQL.Query<Curso>($"SELECT * FROM cursos ORDER BY id LIMIT {limit}");
         }
+
+        public static Curso FindByDocente(int user_id)
+        {
+            return MYSQL.Query<Curso>($"SELECT * FROM cursos WHERE user_id='{user_id}' LIMIT 1").FirstOrDefault();
+        }
     }
 }
