@@ -564,6 +564,10 @@ iframe {
     }
 
 
+.components-reconnect-show, .components-reconnect-failed, .components-reconnect-rejected {
+    display: none;
+}
+
 /* ============ TABLAS START ==================== */
 div.table-title {
     display: block;
