@@ -151,7 +151,7 @@
         }
 
         dialogModel.OnReturn = onEditReturn;
-        dialogModel.Show(new Tarea() { created_at = DateTime.Now, updated_at = DateTime.Now, taller_id = taller.id, fecha_entrega = DateTime.Now.AddDays(7), user_id = auth.user.id, codigo = StringManager.GenerateString() });
+        dialogModel.Show(new Tarea() { created_at = DateTime.Now, updated_at = DateTime.Now, curso_id = curso.id, taller_id = taller.id, fecha_entrega = DateTime.Now.AddDays(7), limite =1, user_id = auth.user.id, codigo = StringManager.GenerateString() });
     }
 
     async void onEditReturn(object sender, object e)

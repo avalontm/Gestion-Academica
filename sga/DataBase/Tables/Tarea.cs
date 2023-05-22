@@ -24,6 +24,10 @@ namespace sga.DataBase.Tables
 
         [OnlyRead]
         [HidenField]
+        public int curso_id { set; get; }
+
+        [OnlyRead]
+        [HidenField]
         public int taller_id { set; get; }
 
         [DisplayField("Fecha de entrega")]
@@ -42,6 +46,9 @@ namespace sga.DataBase.Tables
 
         [EditorField]
         public string? contenido { set; get; }
+
+        [DisplayField("Limites de archivos")]
+        public int limite { set; get; }
 
         public bool activo { set; get; }
 
@@ -70,6 +77,16 @@ namespace sga.DataBase.Tables
         public static List<Tarea> Filter(int taller_id, string filter, int LIMIT = 100)
         {
             return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE taller_id='{taller_id}' AND titulo LIKE '%{filter}%' AND eliminado='0' ORDER BY created_at DESC LIMIT {LIMIT}");
+        }
+
+        public static List<Tarea> GetByDate(DateTime date, int limit = 100)
+        {
+            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND DAY(fecha_entrega)='{date.Day}' ORDER BY fecha_entrega LIMIT {limit}");
+        }
+
+        public static List<Tarea> GetByCalendar(DateTime date, int limit = 100)
+        {
+            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' ORDER BY fecha_entrega LIMIT {limit}");
         }
     }
 }

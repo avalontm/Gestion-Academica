@@ -22,6 +22,7 @@ builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 builder.Services.AddControllers();
 builder.Services.AddSignalR();
 builder.Services.AddBlazoredToast();
+builder.Services.AddHttpClient();
 
 var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtKey"]));
 int SesionExpire = int.Parse(builder.Configuration["SesionExpire"]);

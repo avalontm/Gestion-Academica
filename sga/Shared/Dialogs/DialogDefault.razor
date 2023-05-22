@@ -1,12 +1,14 @@
 ﻿@implements IDisposable
 
-@if (showDialog)
-{
-        <div id="ServiceOKModal" class="modal fade @DialogCssCandidates" style="display:block; background-color: rgba(10,10,10,.25);" aria-modal="true" role="dialog">
-        <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h4 class="modal-title w-100">@Title</h4>
+    <div id="ServiceOKModal" class="modal animate" style="@DisplayCss">
+
+        <div class="modal-dialog modal-xl ">
+
+        @if (showDialog)
+        {
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title w-100">@Title</h4>
                     @if (canClose)
                     {
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -14,28 +16,29 @@
                         </button>
                     }
                 </div>
-                    <div class="modal-body">
-                        <p class="text-center">@Message</p>
-                    </div>
-                    <div class="modal-footer">
+                <div class="modal-body">
+                    <p class="text-center">@Message</p>
+                </div>
+                <div class="modal-footer">
 
-                    @switch(Button)
+                    @switch (Button)
                     {
                         case DialogButton.OK:
                             <button type="button" class="btn btn-primary w-min-100" @onclick="onOK">OK</button>
-                        break;
+                            break;
                         case DialogButton.YESNO:
                             <button type="button" class="btn btn-secondary w-min-100" @onclick="onCancel">NO</button>
                             <button type="button" class="btn btn-primary w-min-100" @onclick="onOK">SI</button>
-                        break;
+                            break;
                     }
-                   
 
-                    </div>
+
                 </div>
             </div>
-        </div>
-}
+        }
+    </div>
+</div>
+
 
 @code {
     private DotNetObjectReference<DialogDefault>? selfReference;
@@ -44,6 +47,7 @@
 
     bool showDialog = false;
     string? DialogCssCandidates => showDialog ? "show" : "hide";
+    string? DisplayCss => showDialog ? "display: block" : "display: none";
     string? Title;
     string? Message;
     bool canClose;

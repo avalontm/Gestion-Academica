@@ -4,10 +4,12 @@
 @using SixLabors.ImageSharp;
 @using SixLabors.ImageSharp.Processing;
 
-@if (showDialog)
-{
-    <div id="ServiceOKModal" class="modal fade @DialogCssCandidates" style="display:block; background-color: rgba(10,10,10,.25);" aria-modal="true" role="dialog">
-        <div class="modal-dialog modal-xl" role="document">
+
+<div id="ServiceOKModal" class="modal animate" style="@DisplayCss">
+
+   <div class="modal-dialog modal-xl ">
+        @if (showDialog)
+        {
             <div class="modal-content">
                 <div class="modal-header">
                     <h4 class="modal-title w-100">
@@ -90,7 +92,7 @@
                                     }
                                     else if (isEditor != null)
                                     {
-
+                                        <div class="form-group">
                                         <BlazoredTextEditor @ref="@QuillHtml">
                                             <ToolbarContent>
                                                 <select class="ql-header">
@@ -120,46 +122,46 @@
                                                 </span>
                                             </ToolbarContent>
                                             <EditorContent>
-                                             
+
                                             </EditorContent>
                                         </BlazoredTextEditor>
-
-                                    }
-                                else
-                                {
-                                    if (isReadOnly)
-                                    {
-                                        if (isPassword != null && isPassword.isPassword)
-                                        {
-                                            <div class="password-container">
-                                                <input type="@inputType" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                                <i class="fa fa-eye" @onclick="ShowPassword"></i>
-                                            </div>
-
-
-                                        }
-                                        else
-                                        {
-                                            <input type="text" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                        }
+                                        </div>
                                     }
                                     else
                                     {
-                                        if (isPassword != null && isPassword.isPassword)
+                                        if (isReadOnly)
                                         {
-                                            <div class="password-container">
-                                                <input type="@inputType" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
-                                                <i class="fa fa-eye" @onclick="ShowPassword"></i>
-                                            </div>
+                                            if (isPassword != null && isPassword.isPassword)
+                                            {
+                                                <div class="password-container">
+                                                    <input type="@inputType" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                                </div>
 
+
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" readonly value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                            }
                                         }
                                         else
                                         {
-                                            <input type="text" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                            if (isPassword != null && isPassword.isPassword)
+                                            {
+                                                <div class="password-container">
+                                                    <input type="@inputType" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                                    <i class="fa fa-eye" @onclick="ShowPassword"></i>
+                                                </div>
+
+                                            }
+                                            else
+                                            {
+                                                <input type="text" class="form-control" value="@fi.GetValue(Model)" @onchange="@((e) => onTextChanged(e, fi))">
+                                            }
                                         }
                                     }
                                 }
-                            }
                                 else if (fi.PropertyType == typeof(int))
                                 {
                                     //Propiedad de Parent
@@ -238,7 +240,7 @@
                                             }
                                         </div>
                                     }
-                                    else if (isParent != null)
+                                    else if (isParent == null)
                                     {
                                         if (isReadOnly)
                                         {
@@ -401,9 +403,11 @@
 
                 </div>
             </div>
+            }
         </div>
-    </div>
-}
+        
+</div>
+
 
 @code {
 
@@ -414,6 +418,7 @@
 
     bool showDialog = false;
     string? DialogCssCandidates => showDialog ? "show" : "hide";
+    string? DisplayCss => showDialog ? "display: block" : "display: none";
     string? BotonDefault = "AGREGAR";
 
     bool isEdit;

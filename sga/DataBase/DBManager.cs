@@ -37,6 +37,8 @@ namespace sga
             MYSQL.CreateTable<Curso>();
             MYSQL.CreateTable<Tarea>();
             MYSQL.CreateTable<Taller>();
+            MYSQL.CreateTable<TareaFile>();
+            MYSQL.CreateTable<TareaUser>();
             
             //Llenamos informacion
             if (MYSQL.Table<User>().Count == 0)

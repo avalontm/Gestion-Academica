@@ -12,6 +12,33 @@
 
 </div>
 
+
+
+<div class="container">
+
+    @foreach (var item in tareas)
+    {
+        <div class="container-curso">
+            <div class="row">
+                <div class="col-2">
+                    <button class="tarea-go " @onclick=@(() => TareaClick(item))>
+                        <div class="tarea-pin"></div>
+                    </button>
+
+                </div>
+                <div class="col">
+                    <div>
+                        <label class="tarea-titulo"><b>@item.titulo</b></label>
+                    </div>
+                    <div>
+                        <label class="tarea-entrega">Hora de entrega: <b>@(item.fecha_entrega.ToString("hh:mm:ss")) </b></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
 @code {
     [ParameterAttribute]
     public string? dateString { set; get; }
@@ -41,11 +68,17 @@
         try
         {
             date = DateTime.Parse(dateString);
-        }catch
+        }
+        catch
         {
             date = DateTime.Now;
         }
 
+        tareas = Tarea.GetByDate(date);
+    }
 
+    async void TareaClick(Tarea item)
+    {
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"tarea/{item.codigo}", "_self" });
     }
 }

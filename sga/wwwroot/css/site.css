@@ -1105,11 +1105,17 @@ input[type="checkbox"] {
     width: 256px;
 }
 
-.parent {
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
+.img-ok {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 128px;
 }
+    .parent {
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: row;
+    }
 
 .child {
     flex: 0 25%;
@@ -1292,29 +1298,56 @@ hr {
     border-radius: 5px;
 }
 
-.curso-titulo {
-    font-size: 16px;
+.tarea-titulo {
+    font-size: 20px;
 }
+
+.tarea-entrega {
+    font-size: 14px;
+}
+
+.tarea-go {
+    margin: 5px 0px 5px 0px;
+    width: 48px;
+    height: 48px;
+}
+
+.tarea-pin {
+    height: 42px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/door-closed-solid.svg' );
+}
+
+.tarea-pin:hover {
+    height: 42px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-image: url( '/svg/door-open-solid.svg' );
+}
+
+    .curso-titulo {
+        font-size: 16px;
+    }
 .curso-docente {
     font-size: 14px;
 }
 
 .curso-go {
-    margin: 5px 10px 5px 10px;
-    width: 32px;
-    height: 32px;
-
+    margin: 5px 0px 5px 0px;
+    width: 48px;
+    height: 48px;
 }
 
 .curso-door {
-    height: 32px;
+    height: 42px;
     background-repeat: no-repeat;
     background-size: cover;
     background-image: url( '/svg/door-closed-solid.svg' );
 }
 
 .curso-door:hover {
-    height: 32px;
+    height: 42px;
     background-repeat: no-repeat;
     background-size: cover;
     background-image: url( '/svg/door-open-solid.svg' );
@@ -1351,4 +1384,109 @@ hr {
     color: black;
     font-weight:bold;
 }
+
+
+
+/* Add Zoom Animation */
+.animate {
+    -webkit-animation: animatezoom 0.2s;
+    animation: animatezoom 0.2s
+}
+
+@-webkit-keyframes animatezoom {
+    from {
+        -webkit-transform: scale(0)
+    }
+
+    to {
+        -webkit-transform: scale(1)
+    }
+}
+
+@keyframes animatezoom {
+    from {
+        transform: scale(0)
+    }
+
+    to {
+        transform: scale(1)
+    }
+}
+
+.container-tarea {
+    padding: 10px;
+    min-height:200px;
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+}
+
+.container-upload {
+    margin-top: 50px;
+    padding: 10px;
+    min-height: 120px;
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+
+}
+
+.container-files {
+    padding: 5px;
+    height: 150px;
+    background-color: #fafafa;
+    border: 3px dashed #dbdbdb;
+    border-radius: 5px;
+    display: flex;
+    overflow-x: auto;
+}
+
+.container-format {
+    margin: 5px;
+    padding:5px;
+    width: 150px;
+    background-color: white;
+    border: 1px solid #dbdbdb;
+    border-radius: 5px;
+}
+
+.container-format-name {
+    font-size: 12px;
+    font-weight: bold;
+    display: block; /* Fallback for non-webkit */
+    display: -webkit-box;
+    height: 2.6em; /* Fallback for non-webkit, line-height * 2 */
+    line-height: 1.3em;
+    -webkit-line-clamp: 2; /* if you change this, make sure to change the fallback line-height and height */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align:center;
+}
+
+.container-document {
+    margin: auto;
+    width: 50%;
+}
+
+.img-document {
+    width: 64px;
+    height: 64px;
+}
+
+.file-remove {
+    display: block;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    border-width: 3px;
+    border-style: solid;
+    border-color: red;
+    border-radius: 100%;
+    background: -webkit-linear-gradient(-45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%), -webkit-linear-gradient(45deg, transparent 0%, transparent 46%, white 46%, white 56%,transparent 56%, transparent 100%);
+    background-color: red;
+    box-shadow: 0px 0px 5px 2px rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
 /* Menu Bar */

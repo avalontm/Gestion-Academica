@@ -1,5 +1,6 @@
 ﻿@page "/tarea/{tarea_codigo}"
 @using System.Diagnostics;
+@using BlazorInputFileExtended.Exceptions;
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
@@ -14,15 +15,144 @@
         @((MarkupString)tarea?.contenido)
     </div>
 
+<div class="container-upload">
+    @if (realizado)
+    {
+        <div class="container-spacing">
+
+            <div class="container-spacing">
+                <img class="img-ok" src="/media/icons/icon_comprobado.png" alt="completado"/>
+            </div>
+
+            <div class="container-spacing">
+                <p class="text-center">La tarea ha sido entregada </p>
+            </div>
+
+        </div>
+    }
+    else
+    {
+    <div class="container-spacing">
+        <label>Limite de archivos: <b>@tarea.limite</b> archivo(s) </label>
+    </div>
+
+    <div class="container-spacing">
+        <InputFileExtended @ref=inputFile IsImage="false"
+                           ShowPreview="false"
+                           MaxUploatedFiles="@tarea.limite"
+                           MaxFileSize=2000000
+                           CleanOnSuccessUpload="true"
+                           MultiFile="true"
+                           OnError="Error"
+                           InputFileTypes="application/pdf,application/application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                           
+                           OnUploadedFile="UploadFile"
+                           OnUploadComleted="Completed"
+                           CanDropFiles="true">
+               <InputContent>
+                   <span>Sube aqui tus archivo(s)</span>
+               </InputContent>
+        </InputFileExtended>
+    </div>
+
+    <div class="container-files">
+
+        @if(inputFile != null)
+        {
+            foreach (var file in inputFile.Files)
+            {
+                switch(file.ContentType)
+                {
+                    case "application/pdf":
+
+                        <div class="container-format">
+                            <button class="file-remove" @onclick=@(()=> onFileRemove(file)) />
+                            <div class="container-document">
+                                <img class="img-document" src="/media/icons/icon_pdf.png" alt="pdf" />
+                            </div>
+                            <div class="container-format-name">
+                                @file.Name
+                            </div>
+                        </div>
+
+                        break;
+                    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+
+                        <div class="container-format">
+                            <div class="container-document">
+                                <img class="img-document" src="/media/icons/icon_docx.png" alt="word" />
+                            </div>
+                            <div class="container-format-name">
+                                @file.Name
+                            </div>
+                        </div>
+
+                        break;
+
+                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+
+                        <div class="container-format">
+                            <div class="container-document">
+                                <img class="img-document" src="/media/icons/icon_excel.png" alt="excel" />
+                            </div>
+                            <div class="container-format-name">
+                                @file.Name
+                            </div>
+                        </div>
+
+                        break;
+
+                    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+
+                        <div class="container-format">
+                            <div class="container-document">
+                                <img class="img-document" src="/media/icons/icon_ppt.png" alt="power point" />
+                            </div>
+                            <div class="container-format-name">
+                                @file.Name
+                            </div>
+                        </div>
+                        break;
+
+                    default:
+
+                        <div class="container-format">
+                            <div class="container-document">
+                                <img class="img-document" src="/media/icons/icon_file.png" alt="power point" />
+                            </div>
+                            <div class="container-format-name">
+                                @file.Name
+                            </div>
+                        </div>
+
+                        break;
+                }
+            }
+        }
+
+    </div>
+
+    <div class="container-spacing">
+           <button @onclick=onUpload class="btn btn-primary w-100"> Subir tarea </button>
+    </div>
+   }
+</div>
+
+<div class="container-footer"></div>
+
+<DialogWait @ref=@waitDialog />
+
 @code {
     [ParameterAttribute]
     public string? tarea_codigo { set; get; }
-    DateTime date { set; get; }
+    DateTime? date { set; get; }
     [Inject] IToastService? toastService { set; get; }
     AuthModel auth { set; get; } = new();
     Tarea? tarea { set; get; }
-    DialogDefault? dialog;
-    DialogModel? dialogModel;
+    TareaUser? tUser { set; get; }
+    DialogWait? waitDialog;
+    InputFileExtended? inputFile;
+    bool realizado;
 
     protected async override Task OnInitializedAsync()
     {
@@ -38,7 +168,6 @@
         StateHasChanged();
     }
 
-   
     async void onLoadTarea()
     {
         tarea = Tarea.Find(tarea_codigo);
@@ -49,6 +178,129 @@
             return;
         }
 
+        tUser = TareaUser.Find(tarea.id);
+
+        if (tUser != null)
+        {
+            realizado = true;
+        }
         StateHasChanged();
+    }
+
+    void Error(InputFileException e)
+    {
+        toastService.ShowError(e.Message);
+    }
+
+    void UploadFile(FileUploadEventArgs e)
+    {
+
+    }
+
+    void Completed(FilesUploadEventArgs e)
+    {
+
+    }
+
+    void onFileRemove(FileUploadContent item)
+    {
+        inputFile.Files.Remove(item);
+    }
+
+    async void onUpload()
+    {
+        int fileCount = 0;
+
+        if (tarea == null)
+        {
+            toastService.ShowError("No se encontro una tarea para subir.");
+            return;
+        }
+
+        if (inputFile.Files.Count == 0)
+        {
+            toastService.ShowWarning("No hay archivos para subir a la tarea.");
+            return;
+        }
+
+        await waitDialog.Show("Subiendo Tarea");
+
+        string folder = Path.Combine("wwwroot", "files", $"user_{auth.user.id}");
+
+        if (!Directory.Exists(folder))
+        {
+            Directory.CreateDirectory(folder);
+        }
+
+        if (!realizado)
+        {
+            tUser = new TareaUser();
+            tUser.created_at = DateTime.Now;
+            tUser.curso_id = tarea.curso_id;
+            tUser.taller_id = tarea.taller_id;
+            tUser.tarea_id = tarea.id;
+            tUser.user_id = auth.user.id;
+        }
+
+        tUser.updated_at = DateTime.Now;
+
+        if (realizado)
+        {
+            if (tUser.Update())
+            {
+
+            }
+        }
+        else
+        {
+            if (tUser.Insert())
+            {
+
+            }
+        }
+
+        foreach (var item in inputFile.Files)
+        {
+
+            string ext = Path.GetExtension(item.Name);
+            string _nameFile = $"{StringManager.GenerateString(20)}{ext}";
+
+            using (MemoryStream ms = new MemoryStream(item.FileBytes))
+            {
+                using (FileStream file = new FileStream(Path.Combine(folder, _nameFile), FileMode.OpenOrCreate, FileAccess.ReadWrite))
+                {
+                    ms.WriteTo(file);
+                }
+            }
+
+            if (!File.Exists(Path.Combine(folder, item.Name)))
+            {
+                TareaFile tFile = new TareaFile();
+                tFile.created_at = DateTime.Now;
+                tFile.user_id = auth.user.id;
+                tFile.curso_id = tarea.curso_id;
+                tFile.taller_id = tarea.taller_id;
+                tFile.tarea_id = tarea.id;
+                tFile.archivo = $"/files/user_{auth.user.id}/{_nameFile}";
+                tFile.nombre = item.Name;
+
+                if (tFile.Insert())
+                {
+                    fileCount++;
+                }
+
+            }
+        }
+
+
+        if (fileCount > 0)
+        {
+            inputFile.Files.Clean();
+            onLoadTarea();
+            waitDialog.Close();
+            toastService.ShowSuccess($"Se ha subido correctamente la tarea: {tarea.titulo}");
+        }
+
+        this.StateHasChanged();
     }
 }

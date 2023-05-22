@@ -33,7 +33,7 @@
 
 @code{
     AuthModel auth { set; get; } = new();
-    List<Tasks> Tareas { set; get; }
+    List<Tasks> Tareas { set; get; } = new ();
     PriorityLabel PriorityDisplay = PriorityLabel.Code;
 
     protected async override Task OnInitializedAsync()
@@ -54,15 +54,21 @@
     {
         DateTime today = DateTime.Now;
 
-        Tareas = new()
-        {
-            new Tasks { ID = 1, DateStart = today.AddDays(8), DateEnd = today.AddDays(8), Code = "MAT", Color = "#19C319", Caption = "Lorem ipsum dolor sit amet" },
-            new Tasks { ID = 2, DateStart = today.AddDays(9), DateEnd = today.AddDays(9), Code = "PROG", Color = "#FFD800", Comment="on Teams template", Caption = "Fusce quis purus eu ante" },
-            new Tasks { ID = 3, DateStart = today.AddDays(5), DateEnd = today.AddDays(5), Code = "ETICA", Color = "#FFD800" },
+        var _tareas = Tarea.GetByCalendar(today);
+        Tareas.Clear();
 
-            new Tasks { ID = 4, DateStart = today.AddDays(2), DateEnd = today.AddDays(2), Code = "ADMIN", Color = "#FFC3FF", Caption = "Ut sit amet turpis eget" } ,
-            new Tasks { ID = 5, DateStart = today.AddDays(10).AddHours(8), DateEnd = today.AddDays(10).AddHours(9), Code = "INV", Color = "#2DD7D7", Comment="Julien's test" }
-        };
+        foreach(var item in _tareas)
+        {
+            Tasks task = new Tasks();
+            task.ID = item.id;
+            task.DateStart = item.fecha_entrega;
+            task.DateEnd = item.fecha_entrega;
+            task.Code = item.titulo;
+            task.Color = "#FFD800";
+
+            Tareas.Add(task);
+        }
+
     }
 
     async void TaskClick(ClickTaskParameter task)
