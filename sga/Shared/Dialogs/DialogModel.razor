@@ -483,14 +483,14 @@
         fis = LoadModel();
         showDialog = true;
         this.StateHasChanged();
-        await Task.Delay(10);
+        await Task.Delay(100);
 
         while (QuillHtml == null)
         {
             await Task.Delay(100);
         }
 
-        await Task.Delay(10);
+        await Task.Delay(1000);
 
         await QuillHtml.LoadHTMLContent(htmlContent);
 
