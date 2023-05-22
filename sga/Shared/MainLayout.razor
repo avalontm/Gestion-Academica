@@ -2,7 +2,8 @@
 @using Blazored.Toast.Configuration;
 @using System.Diagnostics;
 @using Microsoft.AspNetCore.SignalR.Client;
-
+@using Append.Blazor.Notifications
+@inject INotificationService NotificationService
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
@@ -75,13 +76,28 @@
 
         if (firstRender)
         {
-            HubConnection.On<string, string>("Notification", (user, message) =>
+            HubConnection.On<string, string>("Notification", async (user, message) =>
                {
-                   toastService.ShowSuccess($"{message}");
+                   NotificationOptions options = new NotificationOptions
+                       {
+                           Body = message,
+                           Icon = "https://github.com/avalontm/Gestion-Academica/blob/b12657fb84ef436d0ade87207ed1b7a7358cbeb0/sga/wwwroot/media/img-01.png",
+                       };
+
+                   await NotificationService.CreateAsync("Ite Ensenada", options);
                    InvokeAsync(StateHasChanged);
                });
 
             await HubConnection.StartAsync();
+
+            bool IsSupportedByBrowser = await NotificationService.IsSupportedByBrowserAsync();
+            Debug.WriteLine($"[IsSupportedByBrowser] {IsSupportedByBrowser}");
+            if (IsSupportedByBrowser)
+            {
+                PermissionType permission = await NotificationService.RequestPermissionAsync();
+                Debug.WriteLine($"[permission] {permission}");
+            }
+
         }
     }
 

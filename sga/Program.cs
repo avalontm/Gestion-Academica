@@ -1,3 +1,4 @@
+using Append.Blazor.Notifications;
 using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -25,6 +26,7 @@ builder.Services.AddServerSideBlazor().AddHubOptions(options =>
 builder.Services.AddControllers();
 builder.Services.AddBlazoredToast();
 builder.Services.AddHttpClient();
+builder.Services.AddNotifications();
 
 builder.Services.AddSignalR();
 
