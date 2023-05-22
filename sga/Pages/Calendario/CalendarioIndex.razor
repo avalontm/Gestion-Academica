@@ -16,26 +16,32 @@
 
 <div class="container">
 
-    @foreach (var item in tareas)
+    @if (tareas != null)
     {
-        <div class="container-curso">
-            <div class="row">
-                <div class="col-2">
-                    <button class="tarea-go " @onclick=@(() => TareaClick(item))>
-                        <div class="tarea-pin"></div>
-                    </button>
+        @foreach (var item in tareas)
+        {
+            <div class="container-curso">
+                <div class="row">
+                    <div class="col-2">
+                        <button class="tarea-go " @onclick=@(() => TareaClick(item))>
+                            <div class="tarea-pin"></div>
+                        </button>
 
-                </div>
-                <div class="col">
-                    <div>
-                        <label class="tarea-titulo"><b>@item.titulo</b></label>
                     </div>
-                    <div>
-                        <label class="tarea-entrega">Hora de entrega: <b>@(item.fecha_entrega.ToString("hh:mm:ss")) </b></label>
+                    <div class="col">
+                        <div>
+                            <label class="tarea-titulo"><b>@item.titulo</b></label>
+                        </div>
+                        <div>
+                            <label class="tarea-entrega">Hora de entrega: <b>@(
+                            item.fecha_entrega.ToString("hh:mm:ss")
+                            ) </b></label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+
     }
 </div>
 

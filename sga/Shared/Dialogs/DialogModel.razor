@@ -490,6 +490,8 @@
             await Task.Delay(100);
         }
 
+        await Task.Delay(10);
+
         await QuillHtml.LoadHTMLContent(htmlContent);
 
         this.StateHasChanged();
