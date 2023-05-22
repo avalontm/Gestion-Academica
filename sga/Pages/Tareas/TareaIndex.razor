@@ -6,6 +6,12 @@
 @inject IJSRuntime jsRuntime
 
 
+@if (tarea == null)
+{
+    
+}else
+{
+
     <div class="container-spacing">
         <h2><b>@tarea?.titulo</b></h2>
     </div>
@@ -33,7 +39,7 @@
     else
     {
     <div class="container-spacing">
-        <label>Limite de archivos: <b>@tarea.limite</b> archivo(s) </label>
+        <label>Limite de archivos: <b>@tarea?.limite</b> archivo(s) </label>
     </div>
 
     <div class="container-spacing">
@@ -141,6 +147,7 @@
 <div class="container-footer"></div>
 
 <DialogWait @ref=@waitDialog />
+}
 
 @code {
     [ParameterAttribute]

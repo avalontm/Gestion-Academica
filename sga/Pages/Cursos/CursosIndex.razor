@@ -15,27 +15,32 @@
 </div>
 
 <div class="container">
-
-    @foreach(var item in cursos)
+    @if (cursos != null)
     {
-        <div class="container-curso">
-            <div class="row">
-                <div class="col-2">
-                    <button class="curso-go " @onclick=@(() => CursoClick(item))>
-                        <div class="curso-door"></div>
-                    </button>
-                      
-                </div>
-                <div class="col">
-                    <div>
-                        <label class="curso-titulo"><b>@item.nombre</b></label>
+        @foreach (var item in cursos)
+        {
+            <div class="container-curso">
+                <div class="row">
+                    <div class="col-2">
+                        <button class="curso-go " @onclick=@(() => CursoClick(item))>
+                            <div class="curso-door"></div>
+                        </button>
+
                     </div>
-                    <div>
-                        <label class="curso-docente">@(User.Find(item.user_id)?.nombre)</label>
+                    <div class="col">
+                        <div>
+                            <label class="curso-titulo"><b>@item.nombre</b></label>
+                        </div>
+                        <div>
+                            <label class="curso-docente">@(
+                        User.Find(item.user_id)?.nombre
+                        )</label>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        }
+
     }
 </div>
 
