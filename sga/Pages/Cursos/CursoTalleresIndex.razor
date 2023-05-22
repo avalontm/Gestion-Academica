@@ -13,13 +13,42 @@
 
 </div>
 
+<div class="container">
+    @if (talleres != null)
+    {
+        @foreach (var item in talleres)
+        {
+            <div class="container-curso">
+                <div class="row">
+                    <div class="col-2">
+                        <button class="curso-go " @onclick=@(() => TallerClick(item))>
+                            <div class="curso-door"></div>
+                        </button>
+
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label class="curso-titulo"><b>@item.nombre</b></label>
+                        </div>
+                        <div>
+                            <label class="curso-docente">
+                                @item.created_at.ToString("dddd dd \\de\\ MMMM \\del\\ yyyy")
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+</div>
 @code {
     [ParameterAttribute]
     public string? curso_codigo { set; get; }
     [Inject] IToastService? toastService { set; get; }
     AuthModel auth { set; get; } = new();
     List<Taller> talleres { set; get; }
-    Curso curso { set; get; }
+    Curso? curso { set; get; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -32,11 +61,22 @@
         }
 
         onLoadCurso();
+        onLoadTalleres();
         StateHasChanged();
     }
 
     void onLoadCurso()
     {
         curso = Curso.Find(curso_codigo);
+    }
+
+    void onLoadTalleres()
+    {
+        talleres = Taller.Get(curso.id);
+    }
+
+    async void TallerClick(Taller item)
+    {
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"taller/{item.codigo}", "_self" });
     }
 }

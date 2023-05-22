@@ -1,0 +1,93 @@
+﻿@page "/taller/{taller_codigo}"
+@using System.Diagnostics;
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="container">
+
+    <div class="container-spacing">
+        <h2><b>@taller?.nombre</b></h2>
+    </div>
+
+</div>
+
+
+<div class="container">
+
+    @if (tareas != null)
+    {
+        @foreach (var item in tareas)
+        {
+            <div class="container-curso">
+                <div class="row">
+                    <div class="col-2">
+                        <button class="tarea-go " @onclick=@(() => TareaClick(item))>
+                            <div class="tarea-pin"></div>
+                        </button>
+
+                    </div>
+                    <div class="col">
+                        <div>
+                            <label class="tarea-titulo"><b>@item.titulo</b></label>
+                        </div>
+                        <div>
+                            <label class="tarea-entrega">
+                                Hora de entrega: <b>
+                                    @(
+                                        item.fecha_entrega.ToString("hh:mm:ss")
+                                        )
+                                </b>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+    }
+</div>
+
+@code {
+    [ParameterAttribute]
+    public string? taller_codigo { set; get; }
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    List<Tarea>? tareas { set; get; }
+    Taller? taller { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        onLoadTaller();
+        StateHasChanged();
+    }
+
+    void onLoadTaller()
+    {
+        taller = Taller.Find(taller_codigo);
+
+        if (taller == null)
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        tareas = Tarea.Get(taller.id);
+    }
+
+
+    async void TareaClick(Tarea item)
+    {
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"tarea/{item.codigo}", "_self" });
+    }
+}
