@@ -7,7 +7,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-<div class="container">
+
     @if (auth.status)
     {
         <div class="container-spacing">
@@ -28,8 +28,6 @@
             <h2>Para poder acceder al contenido es neserio identificar tu cuenta.</h2>
         </div>
     }
-</div>
-
 
 @code{
     AuthModel auth { set; get; } = new();
