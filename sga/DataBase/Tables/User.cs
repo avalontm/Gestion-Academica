@@ -43,6 +43,10 @@ namespace sga.DataBase.Tables
         [HidenField]
         public bool eliminado { set; get; }
 
+        //Propiedades de api
+        [JsonIgnore]
+        public string? rol_nombre { set; get; }
+
         public static List<User> Get(int limit = 100)
         {
             return MYSQL.Query<User>($"SELECT * FROM usuarios WHERE eliminado='0' ORDER BY id DESC LIMIT {limit}");
@@ -52,6 +56,13 @@ namespace sga.DataBase.Tables
         {
             return MYSQL.Query<User>($"SELECT * FROM usuarios WHERE email='{email}' AND password='{password}' LIMIT 1").FirstOrDefault();
         }
+
+        public static User GetByEmail(string email)
+        {
+            return MYSQL.Query<User>($"SELECT * FROM usuarios WHERE email='{email}' LIMIT 1").FirstOrDefault();
+        }
+
+
 
         public static User Find(int user_id)
         {
