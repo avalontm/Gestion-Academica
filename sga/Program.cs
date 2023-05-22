@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.IdentityModel.Tokens;
 using sga;
 using sga.Services;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -118,6 +119,10 @@ app.MapFallbackToPage("/_Host");
 
 //DabaBase Manager
 DBManager.Connect(app.Configuration);
+
+CultureInfo culture = System.Globalization.CultureInfo.CreateSpecificCulture("es-MX");
+Thread.CurrentThread.CurrentCulture = culture;
+Thread.CurrentThread.CurrentUICulture = culture;
 
 //Iniciamos la aplicacion
 app.Run();
