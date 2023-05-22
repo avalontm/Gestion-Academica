@@ -11,9 +11,19 @@
     
 }else
 {
-
     <div class="container-spacing">
-        <h2><b>@tarea?.titulo</b></h2>
+        <div class="container-spacing">
+            <h2><b>@tarea?.titulo</b></h2>
+        </div>
+        <div class="container-spacing">
+            @if (realizado)
+            {
+                <p>Esta tarea fue entregada el dia <b>@tUser?.updated_at.ToString("dddd dd \\de\\ MMMM \\del\\ yyyy, hh:mm:ss tt")</b></p>
+            }else
+            {
+                <p>Esta tarea debe entregarse antes del <b>@tarea?.fecha_entrega.ToString("dddd dd \\de\\ MMMM \\del\\ yyyy, hh:mm:ss tt")</b></p>
+            }
+        </div>
     </div>
 
 
