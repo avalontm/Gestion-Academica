@@ -1,0 +1,42 @@
+﻿@page "/admin/usuarios"
+@using System.Diagnostics;
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="container">
+
+     <div class="container-spacing">
+            <h2>Usuarios</h2>
+        </div>
+</div>
+
+@code {
+    AuthModel auth { set; get; } = new();
+    List<User> usuarios { set; get; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        if (!auth.user.isAdmin())
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        onLoadUsuarios();
+        StateHasChanged();
+    }
+
+    void onLoadUsuarios()
+    {
+        
+    }
+}
