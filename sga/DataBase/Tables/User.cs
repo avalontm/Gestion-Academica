@@ -44,6 +44,8 @@ namespace sga.DataBase.Tables
         public bool eliminado { set; get; }
 
         //Propiedades de api
+
+        [HidenField]
         [JsonIgnore]
         public string? rol_nombre { set; get; }
 

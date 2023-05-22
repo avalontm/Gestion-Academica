@@ -32,7 +32,9 @@
         @((MarkupString)tarea?.contenido)
     </div>
 
-<div class="container-upload">
+@if (aTiempo)
+{
+    <div class="container-upload">
     @if (realizado)
     {
         <div class="container-spacing">
@@ -72,88 +74,101 @@
         </InputFileExtended>
     </div>
 
-    <div class="container-files">
+                <div class="container-files">
 
-        @if(inputFile != null)
-        {
-            foreach (var file in inputFile.Files)
-            {
-                switch(file.ContentType)
-                {
-                    case "application/pdf":
+                    @if (inputFile != null)
+                    {
+                        foreach (var file in inputFile.Files)
+                        {
+                            switch (file.ContentType)
+                            {
+                                case "application/pdf":
 
-                        <div class="container-format">
-                            <button class="file-remove" @onclick=@(()=> onFileRemove(file)) />
-                            <div class="container-document">
-                                <img class="img-document" src="/media/icons/icon_pdf.png" alt="pdf" />
-                            </div>
-                            <div class="container-format-name">
-                                @file.Name
-                            </div>
-                        </div>
+                                    <div class="container-format">
+                                        <button class="file-remove" @onclick=@(()=> onFileRemove(file)) />
+                                        <div class="container-document">
+                                            <img class="img-document" src="/media/icons/icon_pdf.png" alt="pdf" />
+                                        </div>
+                                        <div class="container-format-name">
+                                            @file.Name
+                                        </div>
+                                    </div>
+                                    break;
+                                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
 
-                        break;
-                    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                                    <div class="container-format">
+                                        <div class="container-document">
+                                            <img class="img-document" src="/media/icons/icon_docx.png" alt="word" />
+                                        </div>
+                                        <div class="container-format-name">
+                                            @file.Name
+                                        </div>
+                                    </div>
+                                    break;
 
-                        <div class="container-format">
-                            <div class="container-document">
-                                <img class="img-document" src="/media/icons/icon_docx.png" alt="word" />
-                            </div>
-                            <div class="container-format-name">
-                                @file.Name
-                            </div>
-                        </div>
+                                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
 
-                        break;
+                                    <div class="container-format">
+                                        <div class="container-document">
+                                            <img class="img-document" src="/media/icons/icon_excel.png" alt="excel" />
+                                        </div>
+                                        <div class="container-format-name">
+                                            @file.Name
+                                        </div>
+                                    </div>
+                                    break;
 
-                    case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
+                                case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
 
-                        <div class="container-format">
-                            <div class="container-document">
-                                <img class="img-document" src="/media/icons/icon_excel.png" alt="excel" />
-                            </div>
-                            <div class="container-format-name">
-                                @file.Name
-                            </div>
-                        </div>
+                                    <div class="container-format">
+                                        <div class="container-document">
+                                            <img class="img-document" src="/media/icons/icon_ppt.png" alt="power point" />
+                                        </div>
+                                        <div class="container-format-name">
+                                            @file.Name
+                                        </div>
+                                    </div>
+                                    break;
 
-                        break;
+                                default:
 
-                    case "application/vnd.openxmlformats-officedocument.presentationml.presentation":
+                                    <div class="container-format">
+                                        <div class="container-document">
+                                            <img class="img-document" src="/media/icons/icon_file.png" alt="power point" />
+                                        </div>
+                                        <div class="container-format-name">
+                                            @file.Name
+                                        </div>
+                                    </div>
+                                    break;
+                            }
+                        }
+                    }
 
-                        <div class="container-format">
-                            <div class="container-document">
-                                <img class="img-document" src="/media/icons/icon_ppt.png" alt="power point" />
-                            </div>
-                            <div class="container-format-name">
-                                @file.Name
-                            </div>
-                        </div>
-                        break;
-
-                    default:
-
-                        <div class="container-format">
-                            <div class="container-document">
-                                <img class="img-document" src="/media/icons/icon_file.png" alt="power point" />
-                            </div>
-                            <div class="container-format-name">
-                                @file.Name
-                            </div>
-                        </div>
-
-                        break;
-                }
-            }
-        }
-
-    </div>
-
-    <div class="container-spacing">
-           <button @onclick=onUpload class="btn btn-primary w-100"> Subir tarea </button>
-    </div>
-   }
+                </div>  <div class="container-spacing">
+                    <button @onclick=onUpload class="btn btn-primary w-100"> Subir tarea </button>
+                </div>
+         }
+        
 </div>
+}  
+else
+{
+    <div class="container-upload">
+            <div class="container-spacing">
+
+                <div class="container-spacing">
+                    <img class="img-ok" src="/media/icons/icon_triste.png" alt="retrasado" />
+                </div>
+
+                <div class="container-spacing">
+                    <p class="text-center">Se te paso el tiempo de entrega </p>
+                </div>
+
+            </div>
+     </div>
+
+}
 
 <div class="container-footer"></div>
 
@@ -171,6 +186,7 @@
     DialogWait? waitDialog;
     InputFileExtended? inputFile;
     bool realizado;
+    bool aTiempo;
 
     protected async override Task OnInitializedAsync()
     {
@@ -190,7 +206,7 @@
     {
         tarea = Tarea.Find(tarea_codigo);
 
-        if(tarea == null)
+        if (tarea == null)
         {
             NavigationManager.NavigateTo("/denegado", true);
             return;
@@ -202,7 +218,30 @@
         {
             realizado = true;
         }
+
+        onTareaATiempo();
         StateHasChanged();
+    }
+
+    void onTareaATiempo()
+    {
+        DateTime dt1 = DateTime.Now;
+        DateTime dt2 = tarea.fecha_entrega;
+      
+        int result = DateTime.Compare(dt1, dt2);
+
+        if (result < 0)
+        {
+            aTiempo = true;
+        }
+        else if (result == 0)
+        {
+            aTiempo = true;
+        }
+        else
+        {
+            aTiempo = false;
+        }
     }
 
     void Error(InputFileException e)

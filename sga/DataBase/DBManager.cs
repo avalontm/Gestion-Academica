@@ -47,7 +47,7 @@ namespace sga
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
                 user.nombre = "Raul Mendez";
-                user.email = "avalontm21@ite.edu.mx.com";
+                user.email = "avalontm@ite.edu.mx";
                 user.password = "cinder";
                 user.role_id = (int)UserRolEnum.Admin;
 
@@ -59,8 +59,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "Parra";
-                user.email = "matematicas@ite.edu.mx.com";
+                user.nombre = "OCTAVIO PARRA VELAZQUEZ";
+                user.email = "matematicas@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
@@ -72,8 +72,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "yamamoto";
-                user.email = "calculo@ite.edu.mx.com";
+                user.nombre = "JOSUE MISSAEL YAMAMOTO RODRIGUEZ";
+                user.email = "calculo@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
@@ -85,8 +85,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "Lourdez Campero León";
-                user.email = "programacion@ite.edu.mx.com";
+                user.nombre = "LOURDEZ ESTEPHANIE CAMPERO LEON";
+                user.email = "programacion@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
@@ -98,8 +98,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "raul casillas";
-                user.email = "investigacion@ite.edu.mx.com";
+                user.nombre = "RAUL CASILLAS FIGUEROA";
+                user.email = "investigacion@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
@@ -111,8 +111,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "maestro de admin";
-                user.email = "administracion@ite.edu.mx.com";
+                user.nombre = "GUSTAVO CASTRO COSIO";
+                user.email = "administracion@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
@@ -124,8 +124,8 @@ namespace sga
                 user = new User();
                 user.created_at = DateTime.Now;
                 user.updated_at = DateTime.Now;
-                user.nombre = "Luleyka";
-                user.email = "etica@ite.edu.mx.com";
+                user.nombre = "LULEYKA AURORA CARRILLO BALDERRAMA";
+                user.email = "etica@ite.edu.mx";
                 user.password = "docente123";
                 user.role_id = (int)UserRolEnum.Docente;
 
