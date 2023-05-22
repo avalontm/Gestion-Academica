@@ -91,7 +91,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-//app.UseHttpsRedirection();
+bool useHttps = bool.Parse(builder.Configuration["UseHttps"]);
+
+if (useHttps)
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseStaticFiles();
 
