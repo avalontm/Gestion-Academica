@@ -25,8 +25,13 @@ namespace sga.DataBase.Tables
 
         public string? codigo { set; get; }
         [HidenField]
+        [JsonIgnore]
         public int user_id { set; get; }
 
+
+        //Propiedades de la api
+        [FieldOmite]
+        public string? docente_nombre { set; get; }
 
         public static List<Curso> Get(int limit = 100)
         {
