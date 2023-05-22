@@ -4,16 +4,91 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 
-<div class="container">
+<!-- Seccion donde el docente creara los talleres para el curso seleccionado -->
 
-     <div class="container-spacing">
-            <h2>Usuarios</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-25">
+            <div class="table-title">
+                <h3> Usuarios </h3>
+            </div>
         </div>
+
+        <div class="container-spacing">
+            <button class="btn btn-outline-dark btn-lg" @onclick="onNew"> <span class="oi oi-plus"> NUEVO USUARIO</span></button>
+        </div>
+
+        <div class="col-75">
+            <div class="wrap-input100">
+                <input class="input100" type="search" id="search" name="search" asp-for="SearchString" placeholder="Buscar" @oninput="onFilter">
+                <span class="focus-input100"></span>
+                <span class="symbol-input100">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </span>
+                <input type="submit" value="Submit" hidden />
+            </div>
+        </div>
+    </div>
 </div>
 
+<div class="content-lotes">
+    <table class="table-fill">
+        <thead>
+            <tr>
+                <th class="text-left" width="180"> Fecha </th>
+                <th class="text-left" width="120"> # Control  </th>
+                <th class="text-left"> Nombre  </th>
+                <th class="text-left"> Acceso </th>
+                <th class="text-left" width="120"> Menu </th>
+            </tr>
+        </thead>
+
+        <tbody class="table-hover">
+            @if (usuarios != null)
+            {
+                @foreach (var item in usuarios)
+                {
+                    <tr>
+                        <td class="text-left">&nbsp; @item.created_at.ToString("dd-MM-yyyy")</td>
+                        <td class="text-left">&nbsp; @item.codigo </td>
+                        <td class="text-left">&nbsp; @item.nombre </td>
+                        <td class="text-left">&nbsp; @(RolUser.Find(item.role_id)?.nombre) </td>
+
+                        <td width="120px">
+                            <div class="dropdown show">
+                                <a class="btn btn-secondary dropdown-toggle btn-formato" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="oi oi-data-transfer-download btn-icon"> </span> <b>ACCIONES</b>
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <div>
+                                        <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>
+                                    </div>
+                                    <div>
+                                        <button class="menu-item-delete" @onclick="@(() => onDelete(item))">ELIMINAR</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="container-footer"></div>
+
+<DialogDefault @ref=@dialog />
+<DialogModel @ref=@dialogModel />
+
 @code {
+    [Inject] IToastService? toastService { set; get; }
     AuthModel auth { set; get; } = new();
     List<User> usuarios { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+    string? FilterString { set; get; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -37,6 +112,136 @@
 
     void onLoadUsuarios()
     {
-        
+        usuarios = User.Get();   
+    }
+
+    void onFilter(ChangeEventArgs args)
+    {
+        FilterString = args.Value.ToString();
+        usuarios = User.Filter(FilterString);
+    }
+
+    void onNew()
+    {
+        dialogModel.OnReturn = onEditReturn;
+        dialogModel.Show(new User() { created_at = DateTime.Now, updated_at = DateTime.Now });
+    }
+
+    void onEditReturn(object sender, object e)
+    {
+        User item = e as User;
+
+        if (string.IsNullOrEmpty(item.nombre))
+        {
+            toastService.ShowError($"Se requiere que un nombre para el usuario");
+            return;
+        }
+
+        if (item.nombre.Length < 3)
+        {
+            toastService.ShowError($"El nombre del usuario debe ser de al menos 3 caracteres");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(item.email))
+        {
+            toastService.ShowError($"Se requiere que un correo para el usuario");
+            return;
+        }
+
+        if (item.email.Length < 3)
+        {
+            toastService.ShowError($"El correo del usuario debe ser de al menos 3 caracteres");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(item.password))
+        {
+            toastService.ShowError($"Se requiere que una contraseña para el usuario");
+            return;
+        }
+
+        if (item.password.Length < 5)
+        {
+            toastService.ShowError($"La contraseña del usuario debe ser de al menos 5 caracteres");
+            return;
+        }
+
+        if (string.IsNullOrEmpty(item.codigo))
+        {
+            toastService.ShowError($"Se requiere que un numero de control para el usuario");
+            return;
+        }
+
+        if (item.codigo.Length < 5)
+        {
+            toastService.ShowError($"El numero de control del usuario debe ser de al menos 5 caracteres");
+            return;
+        }
+
+        if (item.id == 0)
+        {
+            try
+            {
+
+                if (item.Insert())
+                {
+                    toastService.ShowSuccess($"Se ha agregado el usuario; {item.nombre}");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError($"{ex.Message}");
+                return;
+            }
+        }
+        else
+        {
+            try
+            {
+                if (item.Update())
+                {
+                    toastService.ShowSuccess($"Se ha actualizado el usuario: {item.nombre}");
+                }
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError($"{ex.Message}");
+                return;
+            }
+        }
+
+        usuarios = User.Filter(FilterString);
+        dialogModel.Close();
+
+        StateHasChanged();
+    }
+
+    void onEdit(User item)
+    {
+        dialogModel.OnReturn = onEditReturn;
+        dialogModel.Show(item);
+    }
+
+    void onDelete(User item)
+    {
+        dialog.OnReturn = onDeleteReturn;
+        dialog.Model = item;
+        dialog.Show("Confirmar", "¿Esta seguro que desea eliminar este taller?", DialogButton.YESNO);
+    }
+
+    void onDeleteReturn(object sender, object e)
+    {
+        User item = e as User;
+
+        item.eliminado = true;
+
+        if (item.Update())
+        {
+            usuarios = User.Filter(FilterString);
+            toastService.ShowSuccess($"Se ha eliminado el usuario: {item.nombre}");
+        }
+
+        StateHasChanged();
     }
 }

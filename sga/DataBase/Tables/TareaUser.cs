@@ -35,9 +35,9 @@ namespace sga.DataBase.Tables
         public bool eliminado { set; get; }
 
 
-        public static TareaUser Find(int tarea_id)
+        public static TareaUser Find(int tarea_id, int user_id)
         {
-            return MYSQL.Query<TareaUser>($"SELECT * FROM tareas_usuarios WHERE tarea_id='{tarea_id}' AND eliminado='0' LIMIT 1").FirstOrDefault();
+            return MYSQL.Query<TareaUser>($"SELECT * FROM tareas_usuarios WHERE tarea_id='{tarea_id}' AND user_id='{user_id}' AND eliminado='0' LIMIT 1").FirstOrDefault();
         }
     }
 }

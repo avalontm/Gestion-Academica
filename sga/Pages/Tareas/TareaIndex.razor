@@ -185,7 +185,7 @@
             return;
         }
 
-        tUser = TareaUser.Find(tarea.id);
+        tUser = TareaUser.Find(tarea.id, auth.user.id);
 
         if (tUser != null)
         {
