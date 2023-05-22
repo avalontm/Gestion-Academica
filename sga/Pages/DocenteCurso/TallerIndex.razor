@@ -2,6 +2,8 @@
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject HubConnection HubConnection
 
 <!-- Seccion donde el docente creara las tareas/trabajos del taller para el curso seleccionado -->
 
@@ -180,6 +182,7 @@
                 if (item.Insert())
                 {
                     toastService.ShowSuccess($"Se ha agregado la tarea: {item.titulo}");
+                    await HubConnection.SendAsync("SendMessage", "1", $"Se ha agregado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
@@ -195,6 +198,7 @@
                 if (item.Update())
                 {
                     toastService.ShowSuccess($"Se ha actualizado la tarea: {item.titulo}");
+                    await HubConnection.SendAsync("SendMessage", "1", $"Se ha actualizado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
