@@ -44,9 +44,27 @@
             </div>
 
             <div class="container-spacing">
-                <p class="text-center">La tarea ha sido entregada </p>
+                        <p class="text-center" style="font-size:18px;"><b>La tarea ha sido entregada </b></p>
             </div>
 
+            <div class="container-spacing">
+                @if(tUser.calificado)
+                {
+                            <div class="container-spacing">
+                                <p class="text-center" style="font-size:18px;"><b>Calificacion</b></p>
+                            </div>
+
+                            <div class="container-spacing">
+                                <p class="text-center"><b>@tUser.calificacion</b> / 100 </p>
+                            </div>
+                          
+                }
+                else
+                {
+                   <p class="text-center">El docente aun no a califica tu tarea.</p>
+                }
+                       
+             </div>
         </div>
     }
     else
