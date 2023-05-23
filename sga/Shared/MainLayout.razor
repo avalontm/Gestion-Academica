@@ -7,7 +7,7 @@
 @inherits LayoutComponentBase
 @inject AuthenticationStateProvider GetAuthenticationStateAsync
 @inject NavigationManager NavigationManager
-@inject HubConnection HubConnection
+@inject HubConnection hubConnection
 
 <PageTitle>Gestion Academica</PageTitle>
 
@@ -58,15 +58,14 @@
     <BlazoredToasts Position="ToastPosition.BottomRight" Timeout="3" />
 </div>
 
-@code
-{
+@code {
     AuthModel auth { set; get; } = new();
-    [Inject] IToastService? toastService { set; get; }
+    bool isHubLoader;
 
-    protected async override Task OnInitializedAsync()
+    protected override async void OnInitialized()
     {
+        base.OnInitialized();
         auth = await this.GetAuth(GetAuthenticationStateAsync);
-
         StateHasChanged();
     }
 
@@ -76,31 +75,40 @@
 
         if (firstRender)
         {
-            HubConnection.On<string>("Notification", async (message) =>
-               {
-                   NotificationOptions options = new NotificationOptions
-                       {
-                           Body = message,
-                           Icon = "https://raw.githubusercontent.com/avalontm/Gestion-Academica/b12657fb84ef436d0ade87207ed1b7a7358cbeb0/sga/wwwroot/media/img-01.png",
-                           Image = "https://raw.githubusercontent.com/avalontm/Gestion-Academica/b12657fb84ef436d0ade87207ed1b7a7358cbeb0/sga/wwwroot/media/img-01.png",
-                            
-                       };
-
-                   await NotificationService.CreateAsync("Ite Ensenada", options);
-                   InvokeAsync(StateHasChanged);
-               });
-
-            await HubConnection.StartAsync();
-
-            bool IsSupportedByBrowser = await NotificationService.IsSupportedByBrowserAsync();
-            Debug.WriteLine($"[IsSupportedByBrowser] {IsSupportedByBrowser}");
-            if (IsSupportedByBrowser)
+            if (auth.status)
             {
-                PermissionType permission = await NotificationService.RequestPermissionAsync();
-                Debug.WriteLine($"[permission] {permission}");
-            }
+                hubConnection = new HubConnectionBuilder()
+                      .WithUrl(NavigationManager.ToAbsoluteUri("/notificaciones"), options =>
+                      {
+                          options.AccessTokenProvider = () => Task.FromResult(auth.token);
+                      })
+                      .WithAutomaticReconnect()
+                      .Build();
 
+                hubConnection.On<string>("Notification", async (message) =>
+                   {
+                       NotificationOptions options = new NotificationOptions
+                           {
+                               Body = message,
+                               Icon = "https://raw.githubusercontent.com/avalontm/Gestion-Academica/b12657fb84ef436d0ade87207ed1b7a7358cbeb0/sga/wwwroot/media/img-01.png",
+                               Image = "https://raw.githubusercontent.com/avalontm/Gestion-Academica/b12657fb84ef436d0ade87207ed1b7a7358cbeb0/sga/wwwroot/media/img-01.png",
+
+                           };
+
+                       await NotificationService.CreateAsync("Ite Ensenada", options);
+                       InvokeAsync(StateHasChanged);
+                   });
+
+                await hubConnection.StartAsync();
+
+                bool IsSupportedByBrowser = await NotificationService.IsSupportedByBrowserAsync();
+                Debug.WriteLine($"[IsSupportedByBrowser] {IsSupportedByBrowser}");
+                if (IsSupportedByBrowser)
+                {
+                    PermissionType permission = await NotificationService.RequestPermissionAsync();
+                    Debug.WriteLine($"[permission] {permission}");
+                }
+            }
         }
     }
-
 }

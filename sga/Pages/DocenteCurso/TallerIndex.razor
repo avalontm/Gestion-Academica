@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @using Microsoft.AspNetCore.SignalR.Client;
-@inject HubConnection HubConnection
+@inject HubConnection hubConnection
 
 <!-- Seccion donde el docente creara las tareas/trabajos del taller para el curso seleccionado -->
 
@@ -188,7 +188,7 @@
                 if (item.Insert())
                 {
                     toastService.ShowSuccess($"Se ha agregado la tarea: {item.titulo}");
-                    await HubConnection.SendAsync("SendMessage", $"Se ha agregado la tarea: {item.titulo}");
+                    await NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha agregado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
@@ -204,13 +204,12 @@
                 if (item.Update())
                 {
                     toastService.ShowSuccess($"Se ha actualizado la tarea: {item.titulo}");
-                    await HubConnection.SendAsync("SendMessage", $"Se ha actualizado la tarea: {item.titulo}");
+                    await NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha actualizado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
             {
                 toastService.ShowError($"{ex.Message}");
-                return;
             }
         }
 

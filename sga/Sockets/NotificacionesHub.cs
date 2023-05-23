@@ -2,29 +2,32 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using sga.DataBase.Tables;
-using System.Diagnostics.CodeAnalysis;
 
-namespace sga.Services
+namespace sga.Sockets
 {
     public class UserHub
     {
         public string? id { get; set; }
-
         public int user_id { get; set; }
     }
 
     [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     public class NotificacionesHub : Hub
     {
-        static List<UserHub> users = new List<UserHub>();
+        readonly static ConnectionMapping<int> _connections = new ConnectionMapping<int>();
+
+        User GetSession()
+        {
+            return Context.GetHttpContext().GetHubUser();
+        }
 
         public override Task OnConnectedAsync()
         {
-            var _user = this.Context.GetHttpContext().GetHubUser();
+            User _user = GetSession();
 
             if (_user != null)
             {
-                users.Add(new UserHub() { id = this.Context.ConnectionId, user_id = _user.id});
+                _connections.Add(_user.id, Context.ConnectionId);
             }
 
             return base.OnConnectedAsync();
@@ -32,34 +35,31 @@ namespace sga.Services
 
         public override Task OnDisconnectedAsync(Exception? exception)
         {
-            var _user = this.Context.GetHttpContext().GetHubUser();
+            User _user = GetSession();
 
             if (_user != null)
             {
-                var _userhub = users.Where(x=> x.user_id == _user.id).FirstOrDefault();
-
-                if (_userhub != null)
-                {
-                    users.Remove(_userhub);
-                }
+                _connections.Remove(_user.id, Context.ConnectionId);
             }
 
             return base.OnDisconnectedAsync(exception);
         }
 
-        public async Task SendMessage(string message)
+        public async Task SendMessageAll(string message)
         {
-            await Clients.All.SendAsync("Notification",  message);
+            await Clients.All.SendAsync("Notification", message);
+            await Task.Delay(100);
+            Console.WriteLine($"[SendMessageAll] {message}");
         }
 
         public async Task SendMessageTo(int user_id, string message)
         {
-            var usershub = users.Where(x => x.user_id == user_id);
-
-            foreach (var userhub in usershub)
+            foreach (var connectionId in _connections.GetConnections(user_id))
             {
-                await this.Clients.User(userhub.id).SendAsync("Notification", message);
+                Clients.Client(connectionId).SendAsync("Notification", message);
             }
+            await Task.Delay(100);
+            Console.WriteLine($"[SendMessageTo] {user_id} | {message}");
         }
     }
 }

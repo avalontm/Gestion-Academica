@@ -3,7 +3,7 @@
 @inject NavigationManager NavigationManager
 @inject IJSRuntime jsRuntime
 @using Microsoft.AspNetCore.SignalR.Client;
-@inject HubConnection HubConnection
+@inject HubConnection hubConnection
 
 <!-- Seccion donde el docente revizara las tareas/trabajos -->
 
@@ -169,8 +169,16 @@
             if (item.calificado)
             {
                 toastService.ShowSuccess($"Se ha calificado la tarea de: {item.nombre}");
-                await HubConnection.SendAsync("SendMessageTo", item.user_id, $"Han calificado tu tarea de: {tarea.titulo}");
-            }
+
+                try
+                {
+                    await NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea.titulo}");
+                }
+                catch (Exception ex)
+                {
+                    toastService.ShowError($"{ex.Message}");
+                }
+        }
         }
 
         tareas = TareaUser.Filter(tarea.id, FilterString);

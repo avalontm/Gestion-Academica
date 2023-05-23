@@ -3,13 +3,12 @@ using Blazored.Toast;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.IdentityModel.Tokens;
 using sga;
-using sga.Services;
+using sga.Sockets;
 using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -31,20 +30,14 @@ builder.Services.AddNotifications();
 
 builder.Services.AddSignalR();
 
-builder.Services.AddResponseCompression(opts =>
-{
-    opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(
-        new[] { "application/octet-stream" });
-});
 
-builder.Services.AddScoped<HubConnection>(sp => {
-    var navigationManager = sp.GetRequiredService<NavigationManager>();
+builder.Services.AddSingleton<HubConnection>(sp =>
+{
     return new HubConnectionBuilder()
-      .WithUrl(navigationManager.ToAbsoluteUri("/notificaciones"))
+      .WithUrl("http://192.168.1.113/notificaciones")
       .WithAutomaticReconnect()
       .Build();
 });
-
 
 var key = new SymmetricSecurityKey(System.Text.Encoding.ASCII.GetBytes(builder.Configuration["JwtKey"]));
 int SesionExpire = int.Parse(builder.Configuration["SesionExpire"]);
@@ -105,7 +98,6 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseResponseCompression();
 
 app.UseEndpoints(endpoints =>
 {
