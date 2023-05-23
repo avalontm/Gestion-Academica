@@ -169,7 +169,7 @@
             if (item.calificado)
             {
                 toastService.ShowSuccess($"Se ha calificado la tarea de: {item.nombre}");
-                await HubConnection.SendAsync("SendMessageTo", $"{item.user_id}", $"Han calificado tu tarea de: {tarea.titulo}");
+                await HubConnection.SendAsync("SendMessageTo", item.user_id, $"Han calificado tu tarea de: {tarea.titulo}");
             }
         }
 
