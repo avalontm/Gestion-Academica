@@ -1,4 +1,4 @@
-# Sistea de Gestion Academica
+# Sistema de Gestion Academica
 
 ## Sistema web
 
