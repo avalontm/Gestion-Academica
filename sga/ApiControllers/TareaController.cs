@@ -18,7 +18,7 @@ namespace sga.ApiControllers
             return string.Empty;
         }
 
-        [HttpGet("taller_code")]
+        [HttpGet("{taller_code}")]
         public string Get(string taller_code)
         {
             List<Tarea> tareas = null;

@@ -26,20 +26,12 @@ namespace sga.ApiControllers
                 return JsonConvert.SerializeObject(tareas);
             }
 
-            try
-            {
-                tareas = Tarea.GetByDate(DateTime.Now);
-            }
-            catch
-            {
-                tareas = null;
-            }
-
+            tareas = Tarea.GetByDate(DateTime.Now);
 
             return JsonConvert.SerializeObject(tareas);
         }
 
-        [HttpGet("date_sting")]
+        [HttpGet("{date_sting}")]
         public string Get(string date_sting)
         {
             List<Tarea> tareas = null;
