@@ -11,8 +11,10 @@ namespace sga.DataBase.Tables
         public int id { set; get; }
 
         [HidenField]
+        [OnlyRead]
         public DateTime created_at { set; get; }
 
+        [OnlyRead]
         public DateTime updated_at { set; get; }
 
         [HidenField]

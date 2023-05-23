@@ -360,11 +360,11 @@
                                 {
                                     if (isReadOnly)
                                     {
-                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" readonly @onchange="@((e) => onDateTimeChanged(e, fi))">
+                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd hh:mm:ss"))" readonly @onchange="@((e) => onDateTimeChanged(e, fi))">
                                     }
                                     else
                                     {
-                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd"))" @onchange="@((e) => onDateTimeChanged(e, fi))">
+                                        <input type="datetime-local" class="form-control" value="@(DateTime.Parse(fi.GetValue(Model).ToString()).ToString("yyyy-MM-dd hh:mm:ss"))" @onchange="@((e) => onDateTimeChanged(e, fi))">
                                     }
                                 }
                                 else if (fi.PropertyType == typeof(bool))
