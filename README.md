@@ -1,6 +1,12 @@
 # Sistema de Gestion Academica
 
 ## Sistema web
+Este sistema es un proyecto final creado por: Jaime Raul Mendez Lopez para Tecnológico Nacional de México Campus Ensenada
+
+
+## App Mobile
+https://github.com/avalontm/Gestion-Academica-Cliente
+
 
 ## Inicio de sesion
 ![](/images/img_login.png)
