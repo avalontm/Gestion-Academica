@@ -32,65 +32,84 @@
         @((MarkupString)tarea?.contenido)
     </div>
 
-@if (aTiempo)
-{
-    <div class="container-upload">
-    @if (realizado)
+    @if(!tarea.activo)
     {
-        <div class="container-spacing">
-
+        <div class="container-upload">
             <div class="container-spacing">
-                <img class="img-ok" src="/media/icons/icon_comprobado.png" alt="completado"/>
+
+                <div class="container-spacing">
+                    <img class="img-ok" src="/media/icons/icon_tarea_off.png" alt="desactivado" />
+                </div>
+
+                <div class="container-spacing">
+                    <p class="text-center">Esta tarea esta cerrada </p>
+                </div>
+
             </div>
-
-            <div class="container-spacing">
-                        <p class="text-center" style="font-size:18px;"><b>La tarea ha sido entregada </b></p>
-            </div>
-
-            <div class="container-spacing">
-                @if(tUser.calificado)
-                {
-                            <div class="container-spacing">
-                                <p class="text-center" style="font-size:18px;"><b>Calificacion</b></p>
-                            </div>
-
-                            <div class="container-spacing">
-                                <p class="text-center"><b>@tUser.calificacion</b> / 100 </p>
-                            </div>
-                          
-                }
-                else
-                {
-                   <p class="text-center">El docente aun no a califica tu tarea.</p>
-                }
-                       
-             </div>
         </div>
+        
     }
     else
     {
-    <div class="container-spacing">
-        <label>Limite de archivos: <b>@tarea?.limite</b> archivo(s) </label>
-    </div>
+    @if (aTiempo)
+    {
+        <div class="container-upload">
+        @if (realizado)
+        {
+            <div class="container-spacing">
 
-    <div class="container-spacing">
-        <InputFileExtended @ref=inputFile IsImage="false"
-                           ShowPreview="false"
-                           MaxUploatedFiles="@tarea.limite"
-                           MaxFileSize=2000000
-                           CleanOnSuccessUpload="true"
-                           MultiFile="true"
-                           OnError="Error"
-                           InputFileTypes="application/pdf,application/application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
+                <div class="container-spacing">
+                    <img class="img-ok" src="/media/icons/icon_comprobado.png" alt="completado"/>
+                </div>
+
+                <div class="container-spacing">
+                            <p class="text-center" style="font-size:18px;"><b>La tarea ha sido entregada </b></p>
+                </div>
+
+                <div class="container-spacing">
+                    @if(tUser.calificado)
+                    {
+                                <div class="container-spacing">
+                                    <p class="text-center" style="font-size:18px;"><b>Calificacion</b></p>
+                                </div>
+
+                                <div class="container-spacing">
+                                    <p class="text-center"><b>@tUser.calificacion</b> / 100 </p>
+                                </div>
+                          
+                    }
+                    else
+                    {
+                       <p class="text-center">El docente aun no a califica tu tarea.</p>
+                    }
+                       
+                 </div>
+            </div>
+        }
+        else
+        {
+        <div class="container-spacing">
+            <label>Limite de archivos: <b>@tarea?.limite</b> archivo(s) </label>
+        </div>
+
+        <div class="container-spacing">
+            <InputFileExtended @ref=inputFile IsImage="false"
+                               ShowPreview="false"
+                               MaxUploatedFiles="@tarea.limite"
+                               MaxFileSize=2000000
+                               CleanOnSuccessUpload="true"
+                               MultiFile="true"
+                               OnError="Error"
+                               InputFileTypes="application/pdf,application/application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-powerpoint,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.openxmlformats-officedocument.presentationml.presentation"
                            
-                           OnUploadedFile="UploadFile"
-                           OnUploadComleted="Completed"
-                           CanDropFiles="true">
-               <InputContent>
-                   <span>Sube aqui tus archivo(s)</span>
-               </InputContent>
-        </InputFileExtended>
-    </div>
+                               OnUploadedFile="UploadFile"
+                               OnUploadComleted="Completed"
+                               CanDropFiles="true">
+                   <InputContent>
+                       <span>Sube aqui tus archivo(s)</span>
+                   </InputContent>
+            </InputFileExtended>
+        </div>
 
                 <div class="container-files">
 
@@ -187,7 +206,7 @@ else
      </div>
 
 }
-
+}
 <div class="container-footer"></div>
 
 <DialogWait @ref=@waitDialog />

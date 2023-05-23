@@ -81,12 +81,12 @@ namespace sga.DataBase.Tables
 
         public static List<Tarea> GetByDate(DateTime date, int limit = 100)
         {
-            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND DAY(fecha_entrega)='{date.Day}' ORDER BY fecha_entrega LIMIT {limit}");
+            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND DAY(fecha_entrega)='{date.Day}' AND eliminado='0' ORDER BY fecha_entrega LIMIT {limit}");
         }
 
         public static List<Tarea> GetByCalendar(DateTime date, int limit = 100)
         {
-            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' ORDER BY fecha_entrega LIMIT {limit}");
+            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND eliminado='0' ORDER BY fecha_entrega LIMIT {limit}");
         }
     }
 }

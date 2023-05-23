@@ -11,7 +11,8 @@
     @if (auth.status)
     {
         <div class="container-spacing">
-            <h2>Calendario de tareas</h2>
+        <h2>Calendario de tareas</h2>
+        <h3><b>@today.ToString("MMMM \\del\\ yyyy") </b></h3>
         </div>
 
         <div class="container-calendar">
@@ -33,6 +34,7 @@
     AuthModel auth { set; get; } = new();
     List<Tasks> Tareas { set; get; } = new ();
     PriorityLabel PriorityDisplay = PriorityLabel.Code;
+    DateTime today { set; get; }
 
     protected async override Task OnInitializedAsync()
     {
@@ -50,7 +52,7 @@
 
     void onLoadCalendario()
     {
-        DateTime today = DateTime.Now;
+        today = DateTime.Now;
 
         var _tareas = Tarea.GetByCalendar(today);
         Tareas.Clear();

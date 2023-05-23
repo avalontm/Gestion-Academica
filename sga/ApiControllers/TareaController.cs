@@ -12,6 +12,12 @@ namespace sga.ApiControllers
     [ApiController]
     public class TareaController : ControllerBase
     {
+        [HttpGet]
+        public string Get()
+        {
+            return string.Empty;
+        }
+
         [HttpGet("taller_code")]
         public string Get(string taller_code)
         {
