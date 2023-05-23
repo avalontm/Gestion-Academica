@@ -76,7 +76,7 @@
 
         if (firstRender)
         {
-            HubConnection.On<string, string>("Notification", async (user, message) =>
+            HubConnection.On<string>("Notification", async (message) =>
                {
                    NotificationOptions options = new NotificationOptions
                        {

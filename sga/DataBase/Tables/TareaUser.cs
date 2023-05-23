@@ -34,10 +34,24 @@ namespace sga.DataBase.Tables
         [HidenField]
         public bool eliminado { set; get; }
 
+        //Propiedades de la api
+        [HidenField]
+        [FieldOmite]
+        public string? nombre { set; get; }
+
+        public static List<TareaUser> Get(int tarea_id, int limit = 100)
+        {
+            return MYSQL.Query<TareaUser>($"SELECT * FROM tareas_usuarios WHERE tarea_id='{tarea_id}' AND eliminado='0' LIMIT {limit}");
+        }
 
         public static TareaUser Find(int tarea_id, int user_id)
         {
             return MYSQL.Query<TareaUser>($"SELECT * FROM tareas_usuarios WHERE tarea_id='{tarea_id}' AND user_id='{user_id}' AND eliminado='0' LIMIT 1").FirstOrDefault();
+        }
+
+        public static List<TareaUser> Filter(int tarea_id, string filter, int LIMIT = 100)
+        {
+            return MYSQL.Query<TareaUser>($"SELECT * FROM tareas_usuarios as t INNER JOIN usuarios as u ON u.id=t.user_id WHERE t.tarea_id='{tarea_id}' AND u.nombre LIKE '%{filter}%' AND t.eliminado='0' ORDER BY t.updated_at DESC LIMIT {LIMIT}");
         }
     }
 }

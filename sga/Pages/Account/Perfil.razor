@@ -40,7 +40,12 @@
 
              <div class="container-spacing wrap-input100">
                 <p><b>Acceso</b></p>
-                <input class="input100" value="@(RolUser.Find( auth.user.role_id)?.nombre)" readonly />
+                <input class="input100" value="@(RolUser.Find(auth.user.role_id)?.nombre)" readonly />
+            </div>
+
+            <div class="container-spacing wrap-input100">
+                <p><b>Numero de control</b></p>
+                <input class="input100" value="@(auth.user.codigo)" readonly />
             </div>
         </div>
 

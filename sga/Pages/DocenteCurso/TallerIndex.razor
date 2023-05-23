@@ -121,6 +121,12 @@
             return;
         }
 
+        if (!auth.user.isDocente())
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
         onLoadTaller();
         StateHasChanged();
     }
@@ -182,7 +188,7 @@
                 if (item.Insert())
                 {
                     toastService.ShowSuccess($"Se ha agregado la tarea: {item.titulo}");
-                    await HubConnection.SendAsync("SendMessage", "1", $"Se ha agregado la tarea: {item.titulo}");
+                    await HubConnection.SendAsync("SendMessage", $"Se ha agregado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
@@ -198,7 +204,7 @@
                 if (item.Update())
                 {
                     toastService.ShowSuccess($"Se ha actualizado la tarea: {item.titulo}");
-                    await HubConnection.SendAsync("SendMessage", "1", $"Se ha actualizado la tarea: {item.titulo}");
+                    await HubConnection.SendAsync("SendMessage", $"Se ha actualizado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
@@ -222,7 +228,7 @@
 
     async void onSee(Tarea item)
     {
-        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"tarea/{item.codigo}", "_self" });
+        await jsRuntime.InvokeVoidAsync("open", new object[2] { $"docente/curso/taller/tarea/{item.codigo}", "_self" });
     }
 
     void onEdit(Tarea item)

@@ -1,0 +1,181 @@
+﻿@page "/docente/curso/taller/tarea/{tarea_codigo}"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject HubConnection HubConnection
+
+<!-- Seccion donde el docente revizara las tareas/trabajos -->
+
+<div class="container">
+    <div class="row">
+        <div class="col-25">
+            <div class="table-title">
+                <h3>@curso?.nombre - <b>@taller?.nombre</b></h3>
+                <h4><b>@tarea?.titulo </b></h4>
+            </div>
+        </div>
+
+        <div class="col-75">
+            <div class="wrap-input100">
+                <input class="input100" type="search" id="search" name="search" asp-for="SearchString" placeholder="Buscar" @oninput="onFilter">
+                <span class="focus-input100"></span>
+                <span class="symbol-input100">
+                    <i class="fa fa-search" aria-hidden="true"></i>
+                </span>
+                <input type="submit" value="Submit" hidden />
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="content-lotes">
+    <table class="table-fill">
+        <thead>
+            <tr>
+                <th class="text-left" width="180"> Fecha Entrega </th>
+                <th class="text-left" width="180"> Hora Entrega </th>
+                <th class="text-left"> Nombre </th>
+                <th class="text-left"> Calificacion </th>
+                <th class="text-left" width="80"> Activo </th>
+                <th class="text-left" width="120"> Menu </th>
+            </tr>
+        </thead>
+
+        <tbody class="table-hover">
+            @if (tareas != null)
+            {
+                @foreach (var item in tareas)
+                {
+                    <tr>
+                        <td class="text-left">&nbsp; @item.updated_at.ToString("dd-MM-yyyy")</td>
+                        <td class="text-left">&nbsp; @item.updated_at.ToString("hh:mm:ss tt")</td>
+                        <td class="text-left">&nbsp;<b>@(User.Find(item.user_id)?.nombre)</b> </td>
+
+                        <td class="text-left">&nbsp;<b>@(item.calificacion) / 100</b> </td>
+
+                        <td class="text-left">
+                            &nbsp;
+
+                            @if (item.calificado)
+                            {
+                                <div class="icon-activo" alt="Activo" />
+                            }
+                            else
+                            {
+                                <div class="icon-desactivo" alt="Desactivado" />
+                            }
+
+                        </td>
+
+                        <td width="120px">
+                            <div class="dropdown show">
+                                <a class="btn btn-secondary dropdown-toggle btn-formato" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <span class="oi oi-data-transfer-download btn-icon"> </span> <b>ACCIONES</b>
+                                </a>
+
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <div>
+                                        <button class="menu-item" @onclick="@(() => onSee(item))"> VER </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="container-footer"></div>
+
+<DialogDefault @ref=@dialog />
+<DialogModel @ref=@dialogModel />
+
+@code {
+    [ParameterAttribute]
+    public string? tarea_codigo { set; get; }
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    Taller? taller { set; get; }
+    Curso? curso { set; get; }
+    Tarea? tarea { set; get; }
+    List<TareaUser>? tareas { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+    string? FilterString { set; get; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        if (!auth.user.isDocente())
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        onLoadTareas();
+        StateHasChanged();
+    }
+
+    void onLoadTareas()
+    {
+        tarea = Tarea.Find(tarea_codigo);
+
+        if (tarea == null)
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        if(tarea.user_id != auth.user.id)
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        curso = Curso.Find(tarea.curso_id);
+        taller = Taller.Find(tarea.taller_id);
+
+        tareas = TareaUser.Get(tarea.id);
+    }
+
+    void onFilter(ChangeEventArgs args)
+    {
+        FilterString = args.Value.ToString();
+        tareas = TareaUser.Filter(tarea.id, FilterString);
+    }
+
+    async void onSee(TareaUser item)
+    {
+        dialogModel.OnReturn = onEditReturn;
+        dialogModel.Show(item);
+    }
+
+    async void onEditReturn(object sender, object e)
+    {
+        TareaUser item = e as TareaUser;
+
+        if (item.Update())
+        {
+            if (item.calificado)
+            {
+                toastService.ShowSuccess($"Se ha calificado la tarea de: {item.nombre}");
+                await HubConnection.SendAsync("SendMessageTo", $"{item.user_id}", $"Han calificado tu tarea de: {tarea.titulo}");
+            }
+        }
+
+        tareas = TareaUser.Filter(tarea.id, FilterString);
+        dialogModel.Close();
+
+        StateHasChanged();
+    }
+}

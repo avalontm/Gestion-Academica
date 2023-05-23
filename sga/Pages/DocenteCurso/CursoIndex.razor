@@ -112,6 +112,12 @@
             return;
         }
 
+        if (!auth.user.isDocente())
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
         onLoadTalleres();
         StateHasChanged();
     }
