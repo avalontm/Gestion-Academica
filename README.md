@@ -31,3 +31,6 @@ https://github.com/avalontm/Gestion-Academica-Cliente
 
 ## Tarea - retrasada 
 ![](/images/img_mis_tarea_fuera_tiempo.png)
+
+## Tarea - Subir trabajo 
+![](/images/img_mis_tarea_subir_trabajo.png)
