@@ -37,7 +37,7 @@
         <thead>
             <tr>
                 <th class="text-left" width="180"> Fecha Creacion </th>
-                <th class="text-left"> Nombre del taller </th>
+                <th class="text-left"> Tarea </th>
                 <th class="text-left" width="190"> Fecha Entrega </th>
                 <th class="text-left" width="80"> Activo </th>
                 <th class="text-left" width="120"> Menu </th>
@@ -51,7 +51,7 @@
                 {
                     <tr>
                         <td class="text-left">&nbsp; @item.created_at.ToString("dd-MM-yyyy")</td>
-                        <td class="text-left">&nbsp;<a class="disabled-link" href="/tarea/@item.codigo"><b>@item.titulo</b></a> </td>
+                        <td class="text-left">&nbsp;<a class="disabled-link" href="/tarea/@item.codigo"><b style="font-size:16px">@item.titulo</b></a> </td>
 
                         <td class="text-left">&nbsp; @item.fecha_entrega.ToString("dd-MM-yyyy | hh:mm:ss")</td>
 
@@ -75,7 +75,7 @@
 
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                                     <div>
-                                        <button class="menu-item" @onclick="@(() => onSee(item))">VER</button>
+                                        <button class="menu-item" @onclick="@(() => onSee(item))">ENTREGAS</button>
                                     </div>
                                     <div>
                                         <button class="menu-item" @onclick="@(() => onEdit(item))">EDITAR</button>

@@ -427,6 +427,7 @@
     public BlazoredTextEditor? QuillHtml { private set; get; }
     string? htmlContent;
     bool isEditor;
+    bool isLoad;
 
     PropertyInfo[] fis { set; get; }
 
@@ -443,6 +444,7 @@
         Model = model;
         BotonDefault = botonOK;
         isEditor = false;
+        isLoad = false;
 
         if (onlyEdit)
         {
@@ -458,6 +460,7 @@
 
         fis = LoadModel();
         showDialog = true;
+        isLoad = true;
         this.StateHasChanged();
     }
 
@@ -467,6 +470,7 @@
         Model = model;
         BotonDefault = botonOK;
         isEditor = true;
+        isLoad = false;
 
         if (onlyEdit)
         {
@@ -494,6 +498,9 @@
 
         await QuillHtml.LoadHTMLContent(htmlContent);
 
+        await Task.Delay(100);
+        isLoad = true;
+
         this.StateHasChanged();
     }
 
@@ -508,7 +515,9 @@
         Model = null;
         fis = null;
         isEditor = false;
+        isLoad = false;
         showDialog = false;
+
         this.StateHasChanged();
     }
 
@@ -519,7 +528,10 @@
 
     public void onOK()
     {
-        OnReturn?.Invoke(this, Model);
+        if (isLoad)
+        {
+            OnReturn?.Invoke(this, Model);
+        }
     }
 
     void ShowPassword()
