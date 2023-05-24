@@ -39,6 +39,7 @@ namespace sga
             MYSQL.CreateTable<Taller>();
             MYSQL.CreateTable<TareaFile>();
             MYSQL.CreateTable<TareaUser>();
+            MYSQL.CreateTable<Dispositivo>();
             
             //Llenamos informacion
             if (MYSQL.Table<User>().Count == 0)

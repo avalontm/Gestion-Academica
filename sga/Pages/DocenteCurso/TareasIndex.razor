@@ -170,6 +170,17 @@
             {
                 toastService.ShowSuccess($"Se ha calificado la tarea de: {item.nombre}");
 
+                //Buscamos el dispositivo a enviar
+                List<Dispositivo> dispositivos = Dispositivo.Get(item.user_id);
+                List<string> registros = new();
+
+                foreach (var dispositivo in dispositivos)
+                {
+                    registros.Add(dispositivo.token);
+                }
+
+                await FCManager.Send(registros, "Tarea", $"Se ha calificado la tarea de: {item.nombre}");
+
                 try
                 {
                     await NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea.titulo}");
