@@ -84,9 +84,10 @@
 
         var status = await FCManager.Send(TitleString, MessageString);
 
-
         if (status)
         {
+            TitleString = string.Empty;
+            MessageString = string.Empty;
             toastService.ShowSuccess("Se ha enviado correctametne la notificacion.");
         }
 

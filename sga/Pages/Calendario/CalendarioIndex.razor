@@ -80,7 +80,7 @@
             date = DateTime.Now;
         }
 
-        tareas = Tarea.GetByDate(date);
+        tareas = Tarea.GetByCalendar(date);
     }
 
     async void TareaClick(Tarea item)
