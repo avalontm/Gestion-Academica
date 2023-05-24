@@ -26,7 +26,7 @@ namespace sga.ApiControllers
                 return JsonConvert.SerializeObject(tareas);
             }
 
-            tareas = Tarea.GetByDate(DateTime.Now);
+            tareas = Tarea.GetByCalendar(DateTime.Now);
 
             return JsonConvert.SerializeObject(tareas);
         }
