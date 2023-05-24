@@ -21,20 +21,37 @@ namespace sga.ApiControllers
             return null;
         }
 
-        // GET api/<UserController>/5
-        [HttpGet("device/{id}")]
-        public string DeviceGet(int id)
+        [HttpGet("device")]
+        public string MyDevice()
         {
-            ResponseModel response = new ResponseModel();
+            List<Dispositivo> devices = null;
 
             User user = this.HttpContext.GetHubUser();
 
             if (user == null)
             {
-                return JsonConvert.SerializeObject(null);
+                return JsonConvert.SerializeObject(devices);
             }
 
-            List<Dispositivo> devices = Dispositivo.Get(user.id);
+            devices = Dispositivo.Get(user.id);
+
+            return JsonConvert.SerializeObject(devices);
+        }
+
+        // GET api/<UserController>/5
+        [HttpGet("device/{id}")]
+        public string DeviceGet(int id)
+        {
+            List<Dispositivo> devices = null;
+
+            User user = this.HttpContext.GetHubUser();
+
+            if (user == null)
+            {
+                return JsonConvert.SerializeObject(devices);
+            }
+
+             devices = Dispositivo.Get(id);
 
             return JsonConvert.SerializeObject(devices);
         }
