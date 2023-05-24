@@ -18,6 +18,12 @@ namespace sga.ApiControllers
         public string Get()
         {
             User user = this.HttpContext.GetHubUser();
+
+            var absUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, user.avatar);
+
+            user.password = string.Empty;
+            user.avatar = absUrl;
+
             return JsonConvert.SerializeObject(user);
         }
 
@@ -43,7 +49,11 @@ namespace sga.ApiControllers
                 return JsonConvert.SerializeObject(response);
             }
 
+            var absUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, user.avatar);
+
+            user.password = string.Empty;
             user.rol_nombre = RolUser.Find(user.role_id)?.nombre ?? "Desconocido";
+            user.avatar = absUrl;
 
             response.status = true;
             response.title = "Correcto";
