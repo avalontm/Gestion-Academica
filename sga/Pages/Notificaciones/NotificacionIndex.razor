@@ -1,0 +1,95 @@
+﻿@page "/admin/notificaciones"
+@inject AuthenticationStateProvider GetAuthenticationStateAsync
+@inject NavigationManager NavigationManager
+@inject IJSRuntime jsRuntime
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-25">
+            <div class="table-title">
+                <h3> Centro de Notificaciones </h3>
+            </div>
+        </div>
+
+        
+        <div class="container-spacing col-75">
+            <div class="container-spacing">
+
+                <div class="container-spacing">
+                    <input class="input100" type="text" id="title" name="title" asp-for="TitleString" placeholder="Titulo" @oninput="onTitle">
+                </div>
+                <div class="container-spacing">
+                    <input class="input100" type="text" id="message" name="message" asp-for="MessageString" placeholder="Mensaje" @oninput="onMessage">
+                </div>
+
+                <div class="container-spacing">
+                <input class="btn btn-primary w-100" type="submit" value="Submit" @onclick=onSend />
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="container-footer"></div>
+
+<DialogDefault @ref=@dialog />
+<DialogModel @ref=@dialogModel />
+<DialogWait @ref=@dialogWait/>
+
+@code {
+    [Inject] IToastService? toastService { set; get; }
+    AuthModel auth { set; get; } = new();
+    List<User> usuarios { set; get; }
+    DialogDefault? dialog;
+    DialogModel? dialogModel;
+    DialogWait? dialogWait;
+    string? TitleString { set; get; }
+    string? MessageString { set; get; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        auth = await this.GetAuth(GetAuthenticationStateAsync);
+
+        if (!auth.status)
+        {
+            NavigationManager.NavigateTo("/account", true);
+            return;
+        }
+
+        if (!auth.user.isAdmin())
+        {
+            NavigationManager.NavigateTo("/denegado", true);
+            return;
+        }
+
+        StateHasChanged();
+    }
+
+    void onTitle(ChangeEventArgs args)
+    {
+        TitleString = args.Value.ToString();
+    }
+
+    void onMessage(ChangeEventArgs args)
+    {
+        MessageString = args.Value.ToString();
+    }
+
+    async void onSend()
+    {
+        await dialogWait.Show();
+
+
+        var status = await FCManager.Send(TitleString, MessageString);
+
+
+        if (status)
+        {
+            toastService.ShowSuccess("Se ha enviado correctametne la notificacion.");
+        }
+
+        await dialogWait.Close();
+    }
+}

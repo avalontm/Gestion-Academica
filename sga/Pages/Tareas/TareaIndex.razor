@@ -392,7 +392,30 @@ else
             inputFile.Files.Clean();
             onLoadTarea();
             waitDialog.Close();
+
+
+            //Notificaciones
             toastService.ShowSuccess($"Se ha subido correctamente la tarea: {tarea.titulo}");
+
+            //Buscamos el dispositivo a enviar
+            List<Dispositivo> dispositivos = Dispositivo.Get(auth.user.id);
+            List<string> registros = new();
+
+            foreach (var dispositivo in dispositivos)
+            {
+                registros.Add(dispositivo.token);
+            }
+
+            await FCManager.Send(registros, "Tarea", $"Has entregado la tarea de: {tarea?.titulo}");
+
+            try
+            {
+                await NotificationManager.SendTo(NavigationManager, auth.token, auth.user.id, $"Has entregado la tarea de: {tarea?.titulo}");
+            }
+            catch (Exception ex)
+            {
+                toastService.ShowError($"{ex.Message}");
+            }
         }
 
         this.StateHasChanged();

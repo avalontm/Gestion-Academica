@@ -168,6 +168,8 @@
         {
             if (item.calificado)
             {
+                item.nombre = User.Find(item.user_id)?.nombre;
+
                 toastService.ShowSuccess($"Se ha calificado la tarea de: {item.nombre}");
 
                 //Buscamos el dispositivo a enviar
@@ -179,11 +181,11 @@
                     registros.Add(dispositivo.token);
                 }
 
-                await FCManager.Send(registros, "Tarea", $"Se ha calificado la tarea de: {item.nombre}");
+                await FCManager.Send(registros, "Tarea", $"Se ha calificado la tarea de: {tarea?.titulo}");
 
                 try
                 {
-                    await NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea.titulo}");
+                    await NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea?.titulo}");
                 }
                 catch (Exception ex)
                 {

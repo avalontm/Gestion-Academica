@@ -57,6 +57,7 @@ namespace sga.DataBase.Tables
 
 
         [HidenField]
+        [JsonIgnore]
         public bool eliminado { set; get; }
 
         public static List<Tarea> Get(int taller_id, int LIMIT = 100)

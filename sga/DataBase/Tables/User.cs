@@ -41,6 +41,7 @@ namespace sga.DataBase.Tables
         public string? codigo { set; get; }
 
         [HidenField]
+        [JsonIgnore]
         public bool eliminado { set; get; }
 
         //Propiedades de api

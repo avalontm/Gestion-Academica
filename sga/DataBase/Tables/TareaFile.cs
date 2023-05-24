@@ -1,4 +1,5 @@
-﻿using PluginSQL;
+﻿using Newtonsoft.Json;
+using PluginSQL;
 
 namespace sga.DataBase.Tables
 {
@@ -14,6 +15,8 @@ namespace sga.DataBase.Tables
         public int tarea_id { set; get; }
         public string? archivo { set; get; }
         public string? nombre { set; get; }
+
+        [JsonIgnore]
         public bool eliminado { set; get; }
     }
 }

@@ -37,6 +37,7 @@ namespace sga.DataBase.Tables
 
         [OnlyRead]
         [HidenField]
+        [JsonIgnore]
         public bool eliminado { set; get; }
 
 

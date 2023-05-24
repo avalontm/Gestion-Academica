@@ -1,4 +1,5 @@
-﻿using PluginSQL;
+﻿using Newtonsoft.Json;
+using PluginSQL;
 using sga.Sources.Attributes;
 
 namespace sga.DataBase.Tables
@@ -34,6 +35,7 @@ namespace sga.DataBase.Tables
         public bool calificado { set; get; }
 
         [HidenField]
+        [JsonIgnore]
         public bool eliminado { set; get; }
 
         //Propiedades de la api
