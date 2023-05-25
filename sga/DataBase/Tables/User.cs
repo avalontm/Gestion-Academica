@@ -52,7 +52,7 @@ namespace sga.DataBase.Tables
 
         public static List<User> Get(int limit = 100)
         {
-            return MYSQL.Query<User>($"SELECT * FROM usuarios WHERE eliminado='0' ORDER BY id DESC LIMIT {limit}");
+            return MYSQL.Query<User>($"SELECT u.*, r.nombre as rol_nombre FROM usuarios AS u INNER JOIN roles_usuarios AS r ON r.rol_id=u.role_id WHERE u.eliminado='0' ORDER BY u.id DESC LIMIT {limit}");
         }
 
         public static User? Get(string email, string password)
