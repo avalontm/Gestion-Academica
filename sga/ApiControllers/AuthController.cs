@@ -18,12 +18,6 @@ namespace sga.ApiControllers
         public string Get()
         {
             User user = this.HttpContext.GetHubUser();
-
-            var absUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, user.avatar);
-
-            user.password = string.Empty;
-            user.avatar = absUrl;
-
             return JsonConvert.SerializeObject(user);
         }
 
