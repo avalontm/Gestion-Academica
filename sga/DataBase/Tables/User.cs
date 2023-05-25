@@ -46,6 +46,7 @@ namespace sga.DataBase.Tables
 
         //Propiedades de api
         [HidenField]
+        [FieldOmite]
         public string? rol_nombre { set; get; }
 
 
@@ -67,7 +68,7 @@ namespace sga.DataBase.Tables
 
         public static User? Find(int user_id)
         {
-            return MYSQL.Query<User>($"SELECT u.*, r.nombre as rol_nombre FROM usuarios AS u INNER JOIN roles_usuarios AS r ON u.role_id=r.rol_id WHERE u.id='{user_id}' LIMIT 1").FirstOrDefault();
+            return MYSQL.Query<User>($"SELECT u.*, r.nombre as rol_nombre FROM usuarios AS u INNER JOIN roles_usuarios AS r ON r.rol_id=u.role_id WHERE u.id='{user_id}' LIMIT 1").FirstOrDefault();
         }
 
         public static List<User> Filter(string filter, int LIMIT = 100)
