@@ -17,10 +17,10 @@
             <div class="container-spacing">
 
                 <div class="container-spacing">
-                    <input class="input100" type="text" id="title" name="title" asp-for="TitleString" placeholder="Titulo" @oninput="onTitle">
+                    <input class="input100" type="text" id="title" name="title" @bind-value=TitleString placeholder="Titulo">
                 </div>
                 <div class="container-spacing">
-                    <input class="input100" type="text" id="message" name="message" asp-for="MessageString" placeholder="Mensaje" @oninput="onMessage">
+                    <input class="input100" type="text" id="message" name="message" @bind-value=MessageString placeholder="Mensaje">
                 </div>
 
                 <div class="container-spacing">
@@ -79,18 +79,23 @@
 
     async void onSend()
     {
-        await dialogWait.Show();
-
-
-        var status = await FCManager.Send(TitleString, MessageString);
-
-        if (status)
+        if (string.IsNullOrEmpty(MessageString))
         {
-            TitleString = string.Empty;
-            MessageString = string.Empty;
-            toastService.ShowSuccess("Se ha enviado correctametne la notificacion.");
+            toastService.ShowWarning("Debes colocar un mensaje");
+            return;
         }
 
+        await dialogWait.Show();
+
+        NotificationManager.SendAll(NavigationManager, auth.token, MessageString);
+        var status = await FCManager.Send(TitleString, MessageString);
+
+        TitleString = string.Empty;
+        MessageString = string.Empty;
+        toastService.ShowSuccess("Se ha enviado correctametne la notificacion.");
+
         await dialogWait.Close();
+
+        StateHasChanged();
     }
 }

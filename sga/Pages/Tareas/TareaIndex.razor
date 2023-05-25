@@ -410,7 +410,7 @@ else
 
             try
             {
-                await NotificationManager.SendTo(NavigationManager, auth.token, auth.user.id, $"Has entregado la tarea de: {tarea?.titulo}");
+                NotificationManager.SendTo(NavigationManager, auth.token, auth.user.id, $"Has entregado la tarea de: {tarea?.titulo}");
             }
             catch (Exception ex)
             {

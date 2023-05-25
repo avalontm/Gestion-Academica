@@ -98,6 +98,7 @@
 
 <DialogDefault @ref=@dialog />
 <DialogModel @ref=@dialogModel />
+<DialogWait @ref=@dialogWait />
 
 @code {
     [ParameterAttribute]
@@ -109,6 +110,7 @@
     List<Tarea> tareas { set; get; }
     DialogDefault? dialog;
     DialogModel? dialogModel;
+    DialogWait? dialogWait;
     string? FilterString { set; get; }
 
     protected async override Task OnInitializedAsync()
@@ -178,6 +180,8 @@
             return;
         }
 
+        await dialogWait.Show();
+
         item.contenido = await ((DialogModel)sender).QuillHtml.GetHTML();
 
         if (item.id == 0)
@@ -188,13 +192,14 @@
                 if (item.Insert())
                 {
                     toastService.ShowSuccess($"Se ha agregado la tarea: {item.titulo}");
-                    await NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha agregado la tarea: {item.titulo}");
+                    NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha agregado la tarea: {item.titulo}");
                     await FCManager.Send("Nueva Tarea", $"Se ha agregado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
             {
                 toastService.ShowError($"{ex.Message}");
+                await dialogWait.Close();
                 return;
             }
         }
@@ -205,18 +210,21 @@
                 if (item.Update())
                 {
                     toastService.ShowSuccess($"Se ha actualizado la tarea: {item.titulo}");
-                    await NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha actualizado la tarea: {item.titulo}");
+                    NotificationManager.SendAll(NavigationManager, auth.token, $"Se ha actualizado la tarea: {item.titulo}");
                     await FCManager.Send("Tarea Actualizada", $"Se ha actualizado la tarea: {item.titulo}");
                 }
             }
             catch (Exception ex)
             {
                 toastService.ShowError($"{ex.Message}");
+                await dialogWait.Close();
+                return;
             }
         }
 
         tareas = Tarea.Filter(taller.id, FilterString);
         dialogModel.Close();
+        await dialogWait.Close();
 
         StateHasChanged();
     }

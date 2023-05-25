@@ -92,6 +92,7 @@
 
 <DialogDefault @ref=@dialog />
 <DialogModel @ref=@dialogModel />
+<DialogWait @ref=@dialogWait />
 
 @code {
     [ParameterAttribute]
@@ -104,6 +105,7 @@
     List<TareaUser>? tareas { set; get; }
     DialogDefault? dialog;
     DialogModel? dialogModel;
+    DialogWait? dialogWait;
     string? FilterString { set; get; }
 
     protected async override Task OnInitializedAsync()
@@ -164,6 +166,8 @@
     {
         TareaUser item = e as TareaUser;
 
+        await dialogWait.Show();
+
         if (item.Update())
         {
             if (item.calificado)
@@ -185,7 +189,7 @@
 
                 try
                 {
-                    await NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea?.titulo}");
+                    NotificationManager.SendTo(NavigationManager,auth.token, item.user_id, $"Han calificado tu tarea de: {tarea?.titulo}");
                 }
                 catch (Exception ex)
                 {
@@ -196,6 +200,7 @@
 
         tareas = TareaUser.Filter(tarea.id, FilterString);
         dialogModel.Close();
+        await dialogWait.Close();
 
         StateHasChanged();
     }
