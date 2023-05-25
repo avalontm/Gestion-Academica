@@ -52,7 +52,6 @@ namespace sga.ApiControllers
             var absUrl = string.Format("{0}://{1}{2}", Request.Scheme, Request.Host, user.avatar);
 
             user.password = string.Empty;
-            user.rol_nombre = RolUser.Find(user.role_id)?.nombre ?? "Desconocido";
             user.avatar = absUrl;
 
             response.status = true;
