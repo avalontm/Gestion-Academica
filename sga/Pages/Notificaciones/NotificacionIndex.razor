@@ -81,7 +81,7 @@
     {
         await dialogWait.Show();
 
-
+        await NotificationManager.SendAll(NavigationManager, auth.token, MessageString);
         var status = await FCManager.Send(TitleString, MessageString);
 
         if (status)

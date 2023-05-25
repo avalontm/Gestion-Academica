@@ -33,6 +33,9 @@
                             <label class="tarea-titulo"><b>@item.titulo</b></label>
                         </div>
                         <div>
+                            <label class="tarea-subtitulo"><b>@(Curso.Find(item.curso_id)?.nombre)</b></label>
+                        </div>
+                        <div>
                             <label class="tarea-entrega">Hora de entrega: <b>@(
                             item.fecha_entrega.ToString("hh:mm:ss")
                             ) </b></label>
@@ -80,7 +83,7 @@
             date = DateTime.Now;
         }
 
-        tareas = Tarea.GetByCalendar(date);
+        tareas = Tarea.GetByDate(date);
     }
 
     async void TareaClick(Tarea item)

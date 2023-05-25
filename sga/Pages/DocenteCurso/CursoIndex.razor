@@ -92,6 +92,7 @@
 
 <DialogDefault @ref=@dialog />
 <DialogModel @ref=@dialogModel />
+<DialogWait @ref=@dialogWait />
 
 @code {
     [Inject] IToastService? toastService { set; get; }
@@ -100,6 +101,8 @@
     DialogDefault? dialog;
     DialogModel? dialogModel;
     Curso? curso { set; get; }
+    DialogWait? dialogWait;
+
     string? FilterString { set; get; }
 
     protected async override Task OnInitializedAsync()
@@ -180,7 +183,7 @@
         StateHasChanged();
     }
 
-    void onEditReturn(object sender, object e)
+    async void onEditReturn(object sender, object e)
     {
         Taller item = e as Taller;
 
@@ -196,6 +199,8 @@
             return;
         }
 
+        await dialogWait.Show();
+
         if (item.id == 0)
         {
             try
@@ -209,6 +214,7 @@
             catch (Exception ex)
             {
                 toastService.ShowError($"{ex.Message}");
+                await dialogWait.Close();
                 return;
             }
         }
@@ -224,12 +230,14 @@
             catch (Exception ex)
             {
                 toastService.ShowError($"{ex.Message}");
+                await dialogWait.Close();
                 return;
             }
         }
 
         talleres = Taller.Filter(curso.id, FilterString);
         dialogModel.Close();
+        await dialogWait.Close();
 
         StateHasChanged();
     }
