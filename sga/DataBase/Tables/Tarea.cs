@@ -60,6 +60,11 @@ namespace sga.DataBase.Tables
         [JsonIgnore]
         public bool eliminado { set; get; }
 
+        //Api Propiedades
+        [HidenField]
+        [FieldOmite]
+        public string? curso_nombre { set; get; }
+
         public static List<Tarea> Get(int taller_id, int LIMIT = 100)
         {
             return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE taller_id='{taller_id}' AND eliminado='0' ORDER BY created_at DESC LIMIT {LIMIT}");
@@ -87,7 +92,7 @@ namespace sga.DataBase.Tables
 
         public static List<Tarea> GetByCalendar(DateTime date, int limit = 100)
         {
-            return MYSQL.Query<Tarea>($"SELECT * FROM tareas WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND eliminado='0' ORDER BY fecha_entrega LIMIT {limit}");
+            return MYSQL.Query<Tarea>($"SELECT *, c.nombre as curso_nombre FROM tareas INNER JOIN cursos AS c ON c.id=curso_id WHERE Month(fecha_entrega)='{date.Month}' AND YEAR(fecha_entrega)='{date.Year}' AND eliminado='0' ORDER BY fecha_entrega LIMIT {limit}");
         }
     }
 }
